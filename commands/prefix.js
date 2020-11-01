@@ -1,7 +1,8 @@
 const Discord = require('discord.js');
 const { findServer } = require('../helpers/server');
 
-const validPrefixes = ['.', ',', '!', '?', '/', '<', '>', ';', '~'];
+// const validPrefixes = ['.', ',', '!', '?', '/', '<', '>', ';', '~'];
+const validPrefixes = '.,!?/<>;~';
 
 module.exports = {
   name: 'prefix',
@@ -12,9 +13,16 @@ module.exports = {
     // return current prefix
     if (args.length === 0) {
       findServer(serverId).then((server) => {
+        const hasAdmin = message.member.hasPermission('ADMINISTRATOR');
+
         const embed = new Discord.MessageEmbed({
           title: "Server prefix",
-          description: "The current server prefix is `" + server.prefix + "`.",
+          description: "The current server prefix is `" + server.prefix + "`." + 
+            (hasAdmin ? 
+              " Available prefixes include: `" + validPrefixes + "`."
+            :
+              ""
+            ),
         });
 
         message.channel.send(embed);
@@ -37,7 +45,7 @@ module.exports = {
     }
 
     // check whether prefix is valid
-    else if (!validPrefixes.includes(args[0])) {
+    else if (!validPrefixes.includes(args[0]) || args[0].length > 1) {
       const embed = new Discord.MessageEmbed({
         title: "Error setting new prefix",
         description: "Invalid prefix provided. Available prefixes include: `" + validPrefixes + "`.",
