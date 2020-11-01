@@ -14,7 +14,7 @@ const findUser = async (userId, createNewIfNull = true) => {
     const newUser = new User({
       userId: userId,
       currency: defaultCurrency,
-      lastClaimedDaily: new Date(),
+      lastClaimedDaily: new Date(Date.now() - 86400000),  // sets it to one day before so user can claim on creation
     });
 
     // save new user
