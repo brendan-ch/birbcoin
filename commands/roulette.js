@@ -58,7 +58,7 @@ module.exports = {
       const embed = new Discord.MessageEmbed({
         title: message.author.username + " won birbcoins!",
         description: message.author.username + " bet `" + betCurrency + "` birbcoins and won! They now have `" + user.currency + "` birbcoins.",
-        color: "#08FF00"
+        color: "#17d9ff"
       });
 
       message.channel.send(embed);
