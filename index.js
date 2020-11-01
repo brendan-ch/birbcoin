@@ -3,6 +3,10 @@ require('dotenv').config();
 const mongoose = require('mongoose');  // for managing database
 const Discord = require('discord.js');  // for interfacing with Discord API
 const fs = require('fs');  // interact with filesystem
+const express = require('express');
+const app = express();
+const port = process.env.PORT;
+app.set('port', port);
 
 // helper functions
 const { findServer } = require('./helpers/server');
@@ -66,3 +70,7 @@ client.on('message', async (message) => {
 // connect to API
 const token = process.env.ACCESS_TOKEN;
 client.login(token);
+
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+})
