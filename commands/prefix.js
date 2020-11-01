@@ -23,6 +23,19 @@ module.exports = {
       return;
     }
 
+    // check for sufficient permissions
+    else if (!message.member.hasPermission('ADMINISTRATOR')) {
+      const embed = new Discord.MessageEmbed({
+        title: "Insufficient permissions",
+        description: 'You must have a role with the "Administrator" permission enabled to change the server prefix.',
+        color: "#ff0000"
+      });
+
+      message.channel.send(embed);
+
+      return;
+    }
+
     // check whether prefix is valid
     else if (!validPrefixes.includes(args[0])) {
       const embed = new Discord.MessageEmbed({
