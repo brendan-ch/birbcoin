@@ -42,6 +42,8 @@ client.on('ready', () => {
 });
 
 client.on('message', async (message) => {
+  if (!message.guild) return;
+
   // get server ID and prefix
   const serverId = message.guild.id;
   const server = await findServer(serverId);
