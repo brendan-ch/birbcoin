@@ -52,8 +52,20 @@ module.exports = {
     // this is the amount of currency to give
     const numCurrency = args[1] === "all" ? user.currency : parseInt(args[1]);
 
+    // number is negative or a decimal
+    if (numCurrency < 0 || args[1].includes('.')) {
+      const embed = new Discord.MessageEmbed({
+        title: "Invalid value",
+        description: "Please enter a positive integer.",
+        color: "#ff0000"
+      });
+      message.channel.send(embed);
+
+      return;
+    }
+
     // user doesn't have enough currency
-    if (numCurrency > user.currency) {
+    else if (numCurrency > user.currency) {
       const embed = new Discord.MessageEmbed({
         title: "Not enough birbcoins",
         description: message.author.username + " is missing `" + (numCurrency - user.currency) + "` birbcoins.",

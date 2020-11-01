@@ -15,7 +15,7 @@ module.exports = {
       const prefix = server.prefix;
       
       const embed = new Discord.MessageEmbed({
-        title: "Invalid arguments provided",
+        title: "Invalid argument provided",
         description: "To play roulette, use `" + prefix + "roulette <number of birbcoins>`.",
         color: "#ff0000"
       });
@@ -33,9 +33,21 @@ module.exports = {
     // get # birbcoins to bet from args
     // if args[0] === all, get user.currency and set that as bet currency
     const betCurrency = args[0] === "all" ? user.currency : parseInt(args[0]);
+
+    // number is negative or a decimal
+    if (betCurrency < 0 || args[0].includes('.')) {
+      const embed = new Discord.MessageEmbed({
+        title: "Invalid value",
+        description: "Please enter a positive integer.",
+        color: "#ff0000"
+      });
+      message.channel.send(embed);
+
+      return;
+    }
     
     // check if betCurrency exceeds user currency
-    if (betCurrency > user.currency) {
+    else if (betCurrency > user.currency) {
       const embed = new Discord.MessageEmbed({
         title: "Not enough birbcoins",
         description: message.author.username + " is missing `" + (betCurrency - user.currency) + "` birbcoins.",
