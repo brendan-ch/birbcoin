@@ -7,7 +7,7 @@ module.exports = {
   description: "Give someone else some birbcoins.",
   execute: async (message, args) => {
     // no user or invalid # birbcoins provided
-    if (args.length === 0 || message.mentions.members.first() === null || isNaN(args[1])) {
+    if (args.length === 0 || !message.mentions.members.first() || (args[1] !== "all" && isNaN(args[1]))) {
       // get server id to get prefix
       const serverId = message.guild.id;
       findServer(serverId).then(server => {
@@ -43,12 +43,13 @@ module.exports = {
       return;
     };
 
-    // from here on we can assume that all arguments are correct
-    const numCurrency = parseInt(args[1]);
-
     // we already have the recipient from earlier, we just need to get the user giving the coins
     const userId = message.author.id;
     const user = await findUser(userId);
+
+    // from here on we can assume that all arguments are correct
+    // this is the amount of currency to give
+    const numCurrency = args[1] === "all" ? user.currency : parseInt(args[1]);
 
     // user doesn't have enough currency
     if (numCurrency > user.currency) {
