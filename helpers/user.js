@@ -18,7 +18,8 @@ const findUser = async (userId, createNewIfNull = true) => {
     });
 
     // save new user
-    newUser.save();
+    // await: required because saving same document too quickly multiple times will throw error
+    await newUser.save();
 
     // return new user document
     return newUser;

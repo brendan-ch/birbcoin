@@ -16,7 +16,9 @@ const findServer = async (serverId) => {
       prefix: defaultPrefix,
     });
 
-    newServer.save();  // saves document for future
+    // save new server
+    // await: required because saving same document too quickly multiple times will throw error
+    await newServer.save();  // saves document for future
 
     return newServer;  // returns newly created server document
   };
