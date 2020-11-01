@@ -5,6 +5,7 @@ const { findUser } = require('../helpers/user');
 module.exports = {
   name: "give",
   description: "Give someone else some birbcoins.",
+  usage: "@<user> <number of birbcoins>",
   execute: async (message, args) => {
     // no user or invalid # birbcoins provided
     if (args.length === 0 || !message.mentions.members.first() || (args[1] !== "all" && isNaN(args[1]))) {

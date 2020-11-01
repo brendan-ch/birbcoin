@@ -4,7 +4,8 @@ const { findUser } = require('../helpers/user');
 
 module.exports = {
   name: 'roulette',  // used to activate command
-  description: 'Play roulette and lose all your money!',
+  description: 'Play roulette and lose all your birbcoins!',
+  usage: "<number of birbcoins>",
   execute: async (message, args) => {
     // invalid # birbcoins provided
     if (args.length === 0 || (args[0] !== "all" && isNaN(args[0]))) {
