@@ -37,7 +37,7 @@ module.exports = {
     if (betCurrency > user.currency) {
       const embed = new Discord.MessageEmbed({
         title: "Not enough birbcoins",
-        description: "You're missing `" + (betCurrency - user.currency) + "` birbcoins.",
+        description: message.author.username + " is missing `" + (betCurrency - user.currency) + "` birbcoins.",
         color: "#ff0000"
       });
 
