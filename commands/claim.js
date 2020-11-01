@@ -36,7 +36,7 @@ module.exports = {
 
       const embed = new Discord.MessageEmbed({
         title: "Birbcoins claimed!",
-        description: message.author.username + " has claimed `" + claimCurrency + "` birbcoins! They now have `" + user.currency + "` birbcoins.",
+        description: message.author.username + " claimed `" + claimCurrency + "` birbcoins! They now have `" + user.currency + "` birbcoins.",
         color: "#17d9ff"
       });
 
