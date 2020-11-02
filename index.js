@@ -23,7 +23,7 @@ db.on('error', () => {
 });
 
 db.once("open", () => {
-  console.log("Connection established.");
+  console.log("Connection established to database.");
 });
 
 // Discord setup
@@ -43,6 +43,14 @@ for (const fileName of commandFiles) {
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}`);
+
+  // grab status message from env file
+  const statusMessage = process.env.STATUS_MESSAGE;
+
+  if (statusMessage) {
+    client.user.setActivity(statusMessage, { type: 'PLAYING' })
+      .catch((err) => console.error(err));
+  }
 });
 
 client.on('message', async (message) => {
