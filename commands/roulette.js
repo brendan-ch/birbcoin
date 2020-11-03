@@ -35,7 +35,7 @@ module.exports = {
     const betCurrency = args[0] === "all" ? user.currency : parseInt(args[0]);
 
     // number is negative or a decimal
-    if (betCurrency < 0 || args[0].includes('.')) {
+    if (betCurrency <= 0 || args[0].includes('.')) {
       const embed = new Discord.MessageEmbed({
         title: "Invalid value",
         description: "Please enter a positive integer.",
