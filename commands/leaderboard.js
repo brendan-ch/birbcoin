@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const leaderboardCount = process.env.LEADERBOARD_COUNT ? process.env.LEADERBOARD_COUNT : 5;
 
 const { findTopUsersInServer } = require('../helpers/server');
 
@@ -12,8 +13,8 @@ module.exports = {
   execute: async (message, args) => {
     const serverId = message.guild.id;
 
-    // get top 5 users in server
-    const users = await findTopUsersInServer(serverId, 5);
+    // get top users in server
+    const users = await findTopUsersInServer(serverId);
 
     let leaderboard = users.length > 0 ?
       ""
@@ -23,12 +24,22 @@ module.exports = {
     // will run for each user; won't run if there are no users
     let count = 1;
     for (const user of users) {
-      const userClass = await message.client.users.fetch(user.userId);
-      const username = userClass.username;
+      let userClass = undefined;
 
-      leaderboard += `${count}. \`${username}\`: \`${user.currency}\` birbcoins\n`;
+      try {
+        userClass = await message.client.users.fetch(user.userId);
+      } catch(err) {
+        console.error(err);
+      };
 
-      count += 1;
+      if (userClass && userClass.username) {
+        const username = userClass.username;
+
+        leaderboard += `${count}. \`${username}\`: \`${user.currency}\` birbcoins\n`;
+
+        count += 1;
+      };
+      
     }
 
     const embed = new Discord.MessageEmbed({
