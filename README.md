@@ -29,5 +29,5 @@ All of these are required unless otherwise stated.
 - `CLAIM_COOLDOWN` (int): The number of milliseconds to wait before a user can claim birbcoins. Do not set this to more than `3600000` (one hour).
 - `CLAIM_CURRENCY` (int): The number of birbcoins given when a user claims.
 - `LEADERBOARD_COUNT` (int): The maximum number of people to display on the leaderboard.
-- `STATUS_MESSAGE` (string) (optional): The status message to display on startup ("Playing <status message>").
+- `STATUS_MESSAGE` (string) (optional): The status message to display on startup ("Playing `<status message>`").
 - `PORT` (int): The port that the Express server runs on.
