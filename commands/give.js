@@ -7,10 +7,11 @@ module.exports = {
   description: "Give someone else some birbcoins.",
   usage: "@<user> <number of birbcoins>",
   execute: async (message, args) => {
+    const serverId = message.guild.id;
+
     // no user or invalid # birbcoins provided
     if (args.length === 0 || !message.mentions.members.first() || (args[1] !== "all" && isNaN(args[1]))) {
       // get server id to get prefix
-      const serverId = message.guild.id;
       findServer(serverId).then(server => {
         const prefix = server.prefix;
         const embed = new Discord.MessageEmbed({
@@ -30,7 +31,7 @@ module.exports = {
     const recipientUsername = message.mentions.members.first().user.username;  // get username from user object
     
     // get recipient with id; don't create new one if no user found
-    const recipient = await findUser(recipientId, false);
+    const recipient = await findUser(recipientId, false, serverId, message.client);
 
     if (recipient === null) {
       // the user must have interacted with the bot once

@@ -8,10 +8,11 @@ module.exports = {
   execute(message, args) {
     // id of user who sent the message
     const userId = message.author.id;
+    const serverId = message.guild.id;
 
     // username; does not include tag
     const username = message.author.username;
-    findUser(userId).then(user => {
+    findUser(userId, true, serverId, message.client).then(user => {
       // amount of currency
       const currency = user.currency;
 

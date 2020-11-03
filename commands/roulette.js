@@ -7,10 +7,10 @@ module.exports = {
   description: 'Play roulette and lose all your birbcoins!',
   usage: "<number of birbcoins>",
   execute: async (message, args) => {
+    const serverId = message.guild.id;
     // invalid # birbcoins provided
     if (args.length === 0 || (args[0] !== "all" && isNaN(args[0]))) {
       // get server id to get prefix
-      const serverId = message.guild.id;
       const server = await findServer(serverId);
       const prefix = server.prefix;
       
@@ -28,7 +28,7 @@ module.exports = {
 
     // get user details
     const userId = message.author.id;
-    const user = await findUser(userId);
+    const user = await findUser(userId, true, serverId, message.client);
 
     // get # birbcoins to bet from args
     // if args[0] === all, get user.currency and set that as bet currency

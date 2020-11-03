@@ -9,7 +9,7 @@ module.exports = {
   description: 'Claim your hourly 50 birbcoins.',
   execute: async (message, args) => {
     const userId = message.author.id;
-    const user = await findUser(userId);
+    const user = await findUser(userId, true, message.guild.id, message.client);
     const lastClaimed = user.lastClaimedDaily;
 
     const now = new Date();
