@@ -24,6 +24,8 @@ module.exports = {
     // will run for each user; won't run if there are no users
     let count = 1;
     for (const user of users) {
+      if (count > leaderboardCount) break;
+      
       let userClass = undefined;
 
       try {
@@ -36,10 +38,9 @@ module.exports = {
         const username = userClass.username;
 
         leaderboard += `${count}. \`${username}\`: \`${user.currency}\` birbcoins\n`;
-
-        count += 1;
       };
       
+      count += 1;
     }
 
     const embed = new Discord.MessageEmbed({
