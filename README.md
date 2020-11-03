@@ -6,6 +6,7 @@ A Discord currency bot. Invite link [here.](https://discord.com/oauth2/authorize
 - `.currency`: Find out how many birbcoins you have.
 - `.give @<user> <number of birbcoins>`: Give someone else some birbcoins! You'll need to mention the user you're giving birbcoins to.
 - `.help`: List all commands and their uses.
+- `.leaderboard`: See the richest people on your server.
 - `.prefix <new prefix (optional)>`: List the server prefix, or change the server prefix if one is specified (server admins only). Available prefixes: `.,!?/<>;~`
 - `.roulette <number of birbcoins>`: Play roulette and lose all your money!
 
@@ -20,10 +21,13 @@ You must have Node.js installed on your machine.
 - Run `npm start`.
 
 # Environment variables
+All of these are required unless otherwise stated.
 - `ACCESS_TOKEN` (string): The bot token used to log into Discord.
 - `DATABASE_STRING` (string): The string used to log into MongoDB (`mongodb+srv://<username>:<password>@...`).
 - `DEFAULT_PREFIX` (string): The prefix that is automatically set for new servers. Note that server admins can change the prefix for their server by using the `prefix` command. Available prefixes: `.,!?/<>;~`
 - `DEFAULT_CURRENCY` (int): The starting amount of birbcoins for new users.
 - `CLAIM_COOLDOWN` (int): The number of milliseconds to wait before a user can claim birbcoins. Do not set this to more than `3600000` (one hour).
 - `CLAIM_CURRENCY` (int): The number of birbcoins given when a user claims.
+- `LEADERBOARD_COUNT` (int): The maximum number of people to display on the leaderboard.
+- `STATUS_MESSAGE` (string) (optional): The status message to display on startup ("Playing <status message>").
 - `PORT` (int): The port that the Express server runs on.
