@@ -1,5 +1,18 @@
 const Server = require('../models/server');
+const User = require('../models/user');
 const defaultPrefix = process.env.DEFAULT_PREFIX;
+
+const findTopUsersInServer = async (serverId, numUsers = 0) => {
+  const users = await User.find({
+    servers: serverId  // find all documents where serverId is in array servers
+  }).sort({ 'currency': 'desc' });
+
+  if (numUsers > 0 && users.length >= numUsers) {
+    return users.slice(0, numUsers);
+  } else {
+    return users;
+  }
+};
 
 // find server by server ID (retrieved from message sent by user)
 const findServer = async (serverId) => {
@@ -25,3 +38,4 @@ const findServer = async (serverId) => {
 };
 
 module.exports.findServer = findServer;
+module.exports.findTopUsersInServer = findTopUsersInServer;

@@ -1,14 +1,42 @@
 const Discord = require('discord.js');
 
-const { findServer } = require('../helpers/server');
-const { findUser } = require('../helpers/user');
+const { findTopUsersInServer } = require('../helpers/server');
+
+// KNOWN ISSUES:
+// doesn't account for deleted users
+// looks like shit right now
 
 module.exports = {
   name: "leaderboard",
   description: "See who the richest people in your server are.",
   execute: async (message, args) => {
-    const server = message.guild;
+    const serverId = message.guild.id;
 
-    
+    // get top 5 users in server
+    const users = await findTopUsersInServer(serverId, 5);
+
+    let leaderboard = users.length > 0 ?
+      ""
+    :
+      "There is no one on the leaderboard yet.";
+
+    // will run for each user; won't run if there are no users
+    let count = 1;
+    for (const user of users) {
+      const userClass = await message.client.users.fetch(user.userId);
+      const username = userClass.username;
+
+      leaderboard += `${count}. \`${username}\`: \`${user.currency}\` birbcoins\n`;
+
+      count += 1;
+    }
+
+    const embed = new Discord.MessageEmbed({
+      title: "Leaderboard",
+      description: leaderboard,
+      color: "#981ceb"
+    });
+
+    message.channel.send(embed);
   }
 };
