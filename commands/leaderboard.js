@@ -38,9 +38,9 @@ module.exports = {
         const username = userClass.username;
 
         leaderboard += `${count}. \`${username}\`: \`${user.currency}\` birbcoins\n`;
+
+        count += 1;
       };
-      
-      count += 1;
     }
 
     const embed = new Discord.MessageEmbed({
