@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const leaderboardCount = process.env.LEADERBOARD_COUNT ? process.env.LEADERBOARD_COUNT : 5;
 
 const { findTopUsersInServer } = require('../helpers/server');
+const { findUser } = require('../helpers/user');
 
 // KNOWN ISSUES:
 // doesn't account for deleted users
@@ -26,21 +27,26 @@ module.exports = {
     for (const user of users) {
       if (count > leaderboardCount) break;
       
-      let userClass = undefined;
+      // let userClass = undefined;
 
-      try {
-        userClass = await message.client.users.fetch(user.userId);
-      } catch(err) {
-        console.error(err);
+      let username = "";
+
+      if (user.usernameDiscord) {  // get registered username
+        username = user.usernameDiscord;        
+      } else {  // this bit will be removed eventually, after most users have registered username in document
+        try {
+          const userClass = await message.client.users.fetch(user.userId);
+          username = userClass.username;
+
+          findUser(userClass.id, username, true, serverId);
+        } catch(err) {
+          console.error(err);
+        };
       };
 
-      if (userClass && userClass.username) {
-        const username = userClass.username;
+      leaderboard += `${count}. \`${username}\`: \`${user.currency}\` birbcoins\n`;
 
-        leaderboard += `${count}. \`${username}\`: \`${user.currency}\` birbcoins\n`;
-
-        count += 1;
-      };
+      count += 1;
     }
 
     const embed = new Discord.MessageEmbed({
