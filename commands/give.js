@@ -47,6 +47,7 @@ module.exports = {
 
     // we already have the recipient from earlier, we just need to get the user giving the coins
     const userId = message.author.id;
+    const username = message.author.username;
     const user = await findUser(userId, username);
 
     // from here on we can assume that all arguments are correct
