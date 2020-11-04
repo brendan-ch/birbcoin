@@ -12,7 +12,7 @@ module.exports = {
 
     // username; does not include tag
     const username = message.author.username;
-    findUser(userId, true, serverId, message.client).then(user => {
+    findUser(userId, username, true, serverId, message.client).then(user => {
       // amount of currency
       const currency = user.currency;
 

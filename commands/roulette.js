@@ -28,7 +28,8 @@ module.exports = {
 
     // get user details
     const userId = message.author.id;
-    const user = await findUser(userId, true, serverId, message.client);
+    const username = message.author.username;
+    const user = await findUser(userId, username, true, serverId, message.client);
 
     // get # birbcoins to bet from args
     // if args[0] === all, get user.currency and set that as bet currency

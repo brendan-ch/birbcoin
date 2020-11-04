@@ -31,7 +31,7 @@ module.exports = {
     const recipientUsername = message.mentions.members.first().user.username;  // get username from user object
     
     // get recipient with id; don't create new one if no user found
-    const recipient = await findUser(recipientId, false, serverId, message.client);
+    const recipient = await findUser(recipientId, recipientUsername, false, serverId, message.client);
 
     if (recipient === null) {
       // the user must have interacted with the bot once
@@ -47,7 +47,7 @@ module.exports = {
 
     // we already have the recipient from earlier, we just need to get the user giving the coins
     const userId = message.author.id;
-    const user = await findUser(userId);
+    const user = await findUser(userId, username);
 
     // from here on we can assume that all arguments are correct
     // this is the amount of currency to give
