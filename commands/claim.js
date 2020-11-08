@@ -6,6 +6,7 @@ const claimCurrency = Number(process.env.CLAIM_CURRENCY);  // amount of currency
 
 module.exports = {
   name: 'claim',
+  type: "General",
   description: 'Claim your hourly 50 birbcoins.',
   execute: async (message, args) => {
     const userId = message.author.id;

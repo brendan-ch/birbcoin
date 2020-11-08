@@ -4,6 +4,7 @@ const { findUser } = require('../helpers/user');
 
 module.exports = {
   name: "give",
+  type: "General",
   description: "Give someone else some birbcoins.",
   usage: "@<user> <number of birbcoins>",
   execute: async (message, args) => {

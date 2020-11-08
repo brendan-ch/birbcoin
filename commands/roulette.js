@@ -5,6 +5,7 @@ const { findUser } = require('../helpers/user');
 module.exports = {
   name: 'roulette',  // used to activate command
   description: 'Play roulette and lose all your birbcoins!',
+  type: "Wager your birbcoins!",
   usage: "<number of birbcoins>",
   execute: async (message, args) => {
     const serverId = message.guild.id;

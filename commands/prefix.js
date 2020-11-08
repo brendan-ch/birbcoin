@@ -7,6 +7,7 @@ const validPrefixes = '.,!?/<>;~';
 module.exports = {
   name: 'prefix',
   description: 'List the prefix for this server, or change the prefix for this server if one is specified.',
+  type: "Admin",
   usage: '<new prefix (optional)>',
   execute(message, args) {
     const serverId = message.guild.id;

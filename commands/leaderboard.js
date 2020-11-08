@@ -10,6 +10,7 @@ const { findUser } = require('../helpers/user');
 
 module.exports = {
   name: "leaderboard",
+  type: "General",
   description: "See who the richest people in your server are.",
   execute: async (message, args) => {
     const serverId = message.guild.id;
