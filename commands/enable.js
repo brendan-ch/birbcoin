@@ -14,11 +14,12 @@ module.exports = {
     if (args.length === 0 || !server.disabledCommands.includes(args[0])) {
       const embed = new Discord.MessageEmbed({
         title: "Command not found",
-        description: `Disabled commands: \`${server.disabledCommands.join(", ")}\``,
+        description: `Disabled commands: \`${server.disabledCommands.join(", ") || "none"}\``,
         color: "#ff0000"
       });
 
       message.channel.send(embed);
+      return;
     };
 
     try {
@@ -28,7 +29,7 @@ module.exports = {
 
       const embed = new Discord.MessageEmbed({
         title: "Disabled commands updated!",
-        description: `\`${args[0]}\` has been removed from the list of disabled commands.\n\nDisabled commands: \`${server.disabledCommands.join(", ")}\``,
+        description: `\`${args[0]}\` has been removed from the list of disabled commands.\n\nDisabled commands: \`${server.disabledCommands.join(", ") || "none"}\``,
         color: "#08FF00"
       });
 
