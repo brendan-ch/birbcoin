@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const Server = new mongoose.Schema({
   prefix: String,
-  serverId: String
+  serverId: String,
+  disabledCommands: Array,
 });
 
 module.exports = mongoose.model('server', Server);
