@@ -69,7 +69,10 @@ client.on('message', async (message) => {
   const command = args.shift().toLowerCase();  // gets the first thing in args
 
   // if command doesn't exist, return early
-  if (!client.commands.has(command)) return;
+  // likewise, if command is disabled by admin, return early
+  // finally, if command is an admin command, return early if user doesn't have sufficient permission
+  if (!client.commands.has(command) || server.disabledCommands.includes(command) 
+  || (client.commands.get(command)["type"] === "Admin" && !message.member.hasPermission("ADMINISTRATOR"))) return;
 
   // retrieve the command and run execute method on it
   client.commands.get(command).execute(message, args);
