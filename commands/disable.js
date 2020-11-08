@@ -44,7 +44,7 @@ module.exports = {
       // command is an admin command, for safety you can't add admin commands to list
       const embed = new Discord.MessageEmbed({
         title: "Command is an admin command",
-        description: `${args[0]} is an administrator command and cannot be added to the list.`,
+        description: `\`${args[0]}\` is an administrator command and cannot be added to the list.`,
         color: "#ff0000"
       });
 
@@ -59,7 +59,7 @@ module.exports = {
 
       const embed = new Discord.MessageEmbed({
         title: "Disabled commands updated!",
-        description: `\`${args[0]}\` has been added to the list of disabled commands.\n\nDisabled commands: \`${disabledCommands.join(", ")}\``,
+        description: `\`${args[0]}\` has been added to the list of disabled commands.\n\nDisabled commands: \`${disabledCommands.join(", ") || "none"}\``,
         color: "#08FF00"
       });
 
