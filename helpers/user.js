@@ -2,7 +2,15 @@ const User = require('../models/user');
 // amount of currency user starts with
 const defaultCurrency = process.env.DEFAULT_CURRENCY;
 
-const findUser = async (userId, username, createNewIfNull = true, serverId = undefined, client = undefined) => {
+const findUserByTag = async (userTag) => {
+  const user = await User.findOne({
+    usernameDiscord: userTag
+  }).exec();
+
+  return user;
+}
+
+const findUser = async (userId, username = undefined, createNewIfNull = true, serverId = undefined, client = undefined) => {
   // returns null if no user
   const user = await User.findOne({
     userId: userId
@@ -27,7 +35,7 @@ const findUser = async (userId, username, createNewIfNull = true, serverId = und
     });
 
     // update user's username, in case it changed
-    user.usernameDiscord = username;
+    if (username) user.usernameDiscord = username;
 
     // Changing the way server deregistration works:
     // In the future, server admins will be able to deregister users if they see someone they don't want on the leaderboard
@@ -77,7 +85,7 @@ const findUser = async (userId, username, createNewIfNull = true, serverId = und
       currency: defaultCurrency,
       lastClaimedDaily: new Date(Date.now() - 86400000),  // sets it to one day before so user can claim on creation
       servers: [],
-      usernameDiscord: username
+      usernameDiscord: username || undefined
     });
 
     // save new user
@@ -92,3 +100,4 @@ const findUser = async (userId, username, createNewIfNull = true, serverId = und
 };
 
 module.exports.findUser = findUser;
+module.exports.findUserByTag = findUserByTag;
