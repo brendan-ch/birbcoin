@@ -3,8 +3,9 @@ const { findServer } = require('../helpers/server');
 const { findUser } = require('../helpers/user');
 
 module.exports = {
-  name: 'roulette',  // used to activate command
-  description: 'Play roulette and lose all your birbcoins!',
+  name: 'bet',  // used to activate command
+  aliases: ['roulette'],
+  description: 'Lose all your birbcoins!',
   type: "Wager your birbcoins!",
   usage: "<number of birbcoins>",
   execute: async (message, args) => {
@@ -17,7 +18,7 @@ module.exports = {
       
       const embed = new Discord.MessageEmbed({
         title: "Invalid argument provided",
-        description: "To play roulette, use `" + prefix + "roulette <number of birbcoins>`.",
+        description: "To bet coins, use `" + prefix + "bet <number of birbcoins>`.",
         color: "#ff0000"
       });
 
