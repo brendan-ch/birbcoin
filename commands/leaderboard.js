@@ -10,6 +10,7 @@ const { findUser } = require('../helpers/user');
 
 module.exports = {
   name: "leaderboard",
+  aliases: ["rankings"],
   type: "General",
   description: "See who the richest people in your server are.",
   execute: async (message, args) => {

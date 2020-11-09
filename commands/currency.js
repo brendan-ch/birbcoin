@@ -5,6 +5,7 @@ const { findUser } = require('../helpers/user');
 module.exports = {
   name: "currency",
   type: "General",
+  aliases: ['birbcoins'],
   description: "Find out how many birbcoins you have.",
   execute(message, args) {
     // id of user who sent the message
