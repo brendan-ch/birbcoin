@@ -66,7 +66,7 @@ module.exports = {
     try {
       // add the command to list of disabled commands
       server.disabledCommands.push(args[0]);
-      command.aliases.forEach(alias => server.disabledCommands.push(alias));  // push aliases along with default command
+      if (command.aliases) command.aliases.forEach(alias => server.disabledCommands.push(alias));  // push aliases along with default command
       await server.save();
 
       const embed = new Discord.MessageEmbed({
