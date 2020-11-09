@@ -66,16 +66,17 @@ client.on('message', async (message) => {
 
   // trim extra whitespace and remove prefix
   const args = message.content.slice(prefix.length).trim().split(/ +/);
-  const command = args.shift().toLowerCase();  // gets the first thing in args
+  const commandName = args.shift().toLowerCase();  // gets the first thing in args
+  const command = client.commands.get(commandName)
+    || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
   // if command doesn't exist, return early
   // likewise, if command is disabled by admin, return early
   // finally, if command is an admin command, return early if user doesn't have sufficient permission
-  if (!client.commands.has(command) || server.disabledCommands.includes(command) 
-  || (client.commands.get(command)["type"] === "Admin" && !message.member.hasPermission("ADMINISTRATOR"))) return;
+  if (!command || server.disabledCommands.includes(commandName) || (command.type === "Admin" && !message.member.hasPermission('ADMINISTRATOR'))) return;
 
   // retrieve the command and run execute method on it
-  client.commands.get(command).execute(message, args);
+  command.execute(message, args);
 });
 
 // connect to API
