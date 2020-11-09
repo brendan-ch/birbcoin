@@ -28,10 +28,11 @@ module.exports = {
 
     // generate array of all available commands
     const commands = message.client.commands;
-    const commandsArray = commands.array();
-    const commandNames = commandsArray.map(command => command.name);
 
-    if (!commandNames.includes(args[0])) {  // command doesn't exist
+    // to get aliases and other methods
+    const command = commands.get(args[0]);
+
+    if (!command) {  // command doesn't exist
       const embed = new Discord.MessageEmbed({
         title: "Command doesn't exist",
         description: "The command you're looking for doesn't exist.",
@@ -40,7 +41,7 @@ module.exports = {
 
       message.channel.send(embed);
       return;
-    } else if (commandsArray.find(command => command.name === args[0])["type"] === adminCategory) {
+    } else if (command.type === adminCategory) {
       // command is an admin command, for safety you can't add admin commands to list
       const embed = new Discord.MessageEmbed({
         title: "Command is an admin command",
@@ -50,11 +51,22 @@ module.exports = {
 
       message.channel.send(embed);
       return;
-    };
+    } else if (server.disabledCommands.includes(command.name)) {
+      // command already exists in list of commands
+      const embed = new Discord.MessageEmbed({
+        title: "Command already exists in list",
+        description: `\`${args[0]}\` already exists in the list of disabled commands.`,
+        color: "#ff0000"
+      });
+
+      message.channel.send(embed);
+      return;
+    }
 
     try {
       // add the command to list of disabled commands
       server.disabledCommands.push(args[0]);
+      command.aliases.forEach(alias => server.disabledCommands.push(alias));  // push aliases along with default command
       await server.save();
 
       const embed = new Discord.MessageEmbed({
