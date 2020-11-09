@@ -10,7 +10,7 @@ module.exports = {
   description: 'Claim your hourly 50 birbcoins.',
   execute: async (message, args) => {
     const userId = message.author.id;
-    const username = message.author.username;
+    const username = message.author.tag;
     const user = await findUser(userId, username, true, message.guild.id, message.client);
     const lastClaimed = user.lastClaimedDaily;
 

@@ -30,7 +30,7 @@ module.exports = {
 
     // get server member id; same as user id
     const recipientId = message.mentions.members.first().id;
-    const recipientUsername = message.mentions.members.first().user.username;  // get username from user object
+    const recipientUsername = message.mentions.members.first().user.tag;  // get username from user object
     
     // get recipient with id; don't create new one if no user found
     const recipient = await findUser(recipientId, recipientUsername, false, serverId, message.client);
@@ -49,7 +49,7 @@ module.exports = {
 
     // we already have the recipient from earlier, we just need to get the user giving the coins
     const userId = message.author.id;
-    const username = message.author.username;
+    const username = message.author.tag;
     const user = await findUser(userId, username);
 
     // from here on we can assume that all arguments are correct

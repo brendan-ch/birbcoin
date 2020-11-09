@@ -30,7 +30,7 @@ module.exports = {
 
     // get user details
     const userId = message.author.id;
-    const username = message.author.username;
+    const username = message.author.tag;
     const user = await findUser(userId, username, true, serverId, message.client);
 
     // get # birbcoins to bet from args

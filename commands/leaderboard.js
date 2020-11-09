@@ -34,13 +34,13 @@ module.exports = {
       let username = "";
 
       if (user.usernameDiscord) {  // get registered username
-        username = user.usernameDiscord;        
+        username = user.usernameDiscord.slice(0, -5);
       } else {  // this bit will be removed eventually, after most users have registered username in document
         try {
           const userClass = await message.client.users.fetch(user.userId);
           username = userClass.username;
 
-          findUser(userClass.id, username, true, serverId);
+          findUser(userClass.id, userClass.tag, true, serverId);
         } catch(err) {
           console.error(err);
         };
