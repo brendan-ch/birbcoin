@@ -1,6 +1,6 @@
 {
   "name": "birbcoin",
-  "version": "0.3.1",
+  "version": "0.4.1",
   "description": "A bot to feed my crippling gambling addiction",
   "main": "index.js",
   "scripts": {
