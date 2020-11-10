@@ -7,8 +7,9 @@ A Discord currency bot. Invite link [here.](https://discord.com/oauth2/authorize
 - `.give @<user> <number of birbcoins>`: Give someone else some birbcoins! You'll need to mention the user you're giving birbcoins to.
 - `.help`: List all commands and their uses.
 - `.leaderboard`: See the richest people on your server.
-- `.prefix <new prefix (optional)>`: List the server prefix, or change the server prefix if one is specified (server admins only). Available prefixes: `.,!?/<>;~`
-- `.roulette <number of birbcoins>`: Play roulette and lose all your money!
+- `.bet <number of birbcoins>`: Wager and lose all your money!
+
+Administrator commands can be viewed using by running `.help` as an admin.
 
 # Running the bot yourself
 You must have Node.js installed on your machine.
