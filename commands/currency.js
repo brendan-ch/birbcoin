@@ -17,10 +17,12 @@ module.exports = {
     findUser(userId, username, true, serverId, message.client).then(user => {
       // amount of currency
       const currency = user.currency;
+      
+      const shortUsername = username.slice(0, -5);
 
       const embed = new Discord.MessageEmbed({
-        title: `${username}'s birbcoins`,
-        description: username + " has `" + currency + "` birbcoins.",
+        title: `${shortUsername}'s birbcoins`,
+        description: shortUsername + " has `" + currency + "` birbcoins.",
       });
 
       message.channel.send(embed);

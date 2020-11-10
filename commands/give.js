@@ -34,12 +34,13 @@ module.exports = {
     
     // get recipient with id; don't create new one if no user found
     const recipient = await findUser(recipientId, recipientUsername, false, serverId, message.client);
+    const recipientUsernameShort = recipientUsername.slice(0, -5);
 
     if (recipient === null) {
       // the user must have interacted with the bot once
       const embed = new Discord.MessageEmbed({
         title: "No user found",
-        description: recipientUsername + " hasn't interacted with me yet. To prevent incidents where birbcoin is lost (e.g. to a bot) among other issues, the recipient must have interacted with me at least once.",
+        description: recipientUsernameShort + " hasn't interacted with me yet. To prevent incidents where birbcoin is lost (e.g. to a bot) among other issues, the recipient must have interacted with me at least once.",
         color: "#ff0000"
       });
 
@@ -101,7 +102,7 @@ module.exports = {
     
     const embed = new Discord.MessageEmbed({
       title: "Successful transaction",
-      description: message.author.username + " gave `" + numCurrency + "` birbcoins to " + recipientUsername + "! They now have `" + recipient.currency + "` birbcoins.",
+      description: message.author.username + " gave `" + numCurrency + "` birbcoins to " + recipientUsernameShort + "! They now have `" + recipient.currency + "` birbcoins.",
       color: "#08FF00"
     });
 
