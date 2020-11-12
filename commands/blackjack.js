@@ -128,7 +128,7 @@ const updateDealerHand = (game) => {
 }
 
 // this will be used several times to update user on current game
-const sendCurrentGame = (message, game) => {
+const sendCurrentGame = (message, game, prefix = ".") => {
   const playerValue = checkCurrentNumber(game.playerHand);
   
   // if we're not showing the dealer's cards, pick the first card and show that instead
@@ -154,8 +154,9 @@ const sendCurrentGame = (message, game) => {
   })
 
   const embed = new Discord.MessageEmbed({
-    title: "Current game",
-    description: `**__Player's hand__**\n\`${displayPlayerHand}\`\n**__Dealer's hand__**\n\`${game.showDealerCards ? displayDealerHand : displayDealerHandHidden}\``
+    title: `${message.author.username}'s current game`,
+    description: `\`${game.bet}\` birbcoins\n\n`
+    + `**__Player's hand__**\n\`${displayPlayerHand}\`\n**__Dealer's hand__**\n\`${game.showDealerCards ? displayDealerHand : displayDealerHandHidden}\``
     + `\n${message.author.username} is currently sitting at \`${playerValue}\`. `
     + (playerValue > 21 ? "They busted first!" : "")
     + (playerValue === 21 && game.playerHand.length === 2 ? "They hit blackjack!" : "")
@@ -163,10 +164,10 @@ const sendCurrentGame = (message, game) => {
     + (dealerValue > 21 ? "They busted!" : "")
     + (dealerValue === 21 && game.dealerHand.length === 2 ? "They hit blackjack!" : "")
     // display options
-    + `\n\nAvailable options: \`hit, stand`
+    + `\n\nAvailable options: \`${prefix}blackjack <hit, stand`
     // + (game.playerHand.length === 2 ? `, double` : "")
     // + (game.playerHand.length === 2 && game.playerHand[0].value === game.playerHand[1].value ? ', split' : "")
-    + `\``
+    + `>\``
     // The JSON.stringify is temporary and will be removed after I properly format everything
   });
 
@@ -238,22 +239,22 @@ module.exports = {
         const outcome = "tie";
 
         updateDealerHand(newGame);
-        sendCurrentGame(message, newGame);
+        sendCurrentGame(message, newGame, prefix);
         updateUserData(message, user, newGame.bet, outcome, true);
       } else if (checkCurrentNumber(newGame.playerHand) === 21) {  // player blackjack; pay out 1.5x
         const outcome = "player";
         
         updateDealerHand(newGame);
-        sendCurrentGame(message, newGame);
+        sendCurrentGame(message, newGame, prefix);
         updateUserData(message, user, newGame.bet, outcome, true);
       } else if (checkCurrentNumber(newGame.dealerHand) === 21) {
         const outcome = "dealer";
 
         updateDealerHand(newGame);
-        sendCurrentGame(message, newGame);
+        sendCurrentGame(message, newGame, prefix);
         updateUserData(message, user, newGame.bet, outcome, true);
       } else {
-        sendCurrentGame(message, newGame);
+        sendCurrentGame(message, newGame, prefix);
       }
 
       return;
@@ -262,7 +263,7 @@ module.exports = {
     // assume that a game exists and user wants to get details of game
 
     if (args.length === 0) {
-      sendCurrentGame(message, game);
+      sendCurrentGame(message, game, prefix);
       return;
     };
 
@@ -274,7 +275,7 @@ module.exports = {
 
         if (checkCurrentNumber(game.playerHand) > 21) {
           updateDealerHand(game);
-          sendCurrentGame(message, game);
+          sendCurrentGame(message, game, prefix);
 
           const outcome = concludeGame(game);
           updateUserData(message, user, game.bet, outcome);
@@ -282,7 +283,7 @@ module.exports = {
           return;
         };
 
-        sendCurrentGame(message, game);
+        sendCurrentGame(message, game, prefix);
 
         // we check if there's cards in splitHand, if there are then we move splitHand cards to playerHand
 
@@ -295,7 +296,7 @@ module.exports = {
 
         // we check if there's cards in splitHand, if there are then we move splitHand cards to playerHand
 
-        sendCurrentGame(message, game);
+        sendCurrentGame(message, game, prefix);
 
         const outcome = concludeGame(game);
 
