@@ -194,7 +194,7 @@ module.exports = {
       if (args.length === 0) {
         const embed = new Discord.MessageEmbed({
           title: "No current game found",
-          description: `Please use \`${prefix}blackjack <amount of birbcoins> to start a new game.`,
+          description: `Please use \`${prefix}blackjack <amount of birbcoins>\` to start a new game.`,
           color: "#ff0000"
         });
 
