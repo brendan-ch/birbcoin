@@ -8,6 +8,7 @@ A Discord currency bot. Invite link [here.](https://discord.com/oauth2/authorize
 - `.help`: List all commands and their uses.
 - `.leaderboard`: See the richest people on your server.
 - `.bet <number of birbcoins>`: Wager and lose all your money!
+- `.blackjack <number of birbcoins>`: Play blackjack and lose even more of your money!
 
 Administrator commands can be viewed using by running `.help` as an admin.
 
