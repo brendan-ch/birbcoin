@@ -232,7 +232,7 @@ module.exports = {
 
       const newGame = await findCreateGame(userID, betCurrency);
       user.currency -= betCurrency;  // take user currency now and give it back later
-      await user.save(); 
+      user.save();
 
       // determine if dealer's OR player's hand = 21 and conclude game here
       if (checkCurrentNumber(newGame.playerHand) === 21 && checkCurrentNumber(newGame.dealerHand) === 21) {
