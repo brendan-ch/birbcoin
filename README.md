@@ -32,4 +32,5 @@ All of these are required unless otherwise stated.
 - `CLAIM_CURRENCY` (int): The number of birbcoins given when a user claims.
 - `LEADERBOARD_COUNT` (int): The maximum number of people to display on the leaderboard.
 - `STATUS_MESSAGE` (string) (optional): The status message to display on startup ("Playing `<status message>`").
+- `BLACKJACK_DECKS` (int) (optional): The number of decks to use when creating a new blackjack game. Defaults to `1` if not specified.
 - `PORT` (int): The port that the Express server runs on.
