@@ -3,7 +3,7 @@ const { findUser } = require('../helpers/user');
 const { findCreateGame, updateHand } = require("../helpers/blackjack");
 const Discord = require("discord.js");
 
-let messageQueue = [];
+let messageQueue = {};
 
 const checkCurrentNumber = (deck, dealer = false) => {
   const conversionTable = {
@@ -137,7 +137,9 @@ const updateUserData = async (message, user, bet, outcome, blackjack = false) =>
   }
 
   // we want to keep the last message so that we can see what happened
-  messageQueue[message.author.id] = undefined;
+  delete messageQueue[message.author.id];
+
+  return;
 }
 
 const updateDealerHand = (game) => {
@@ -259,7 +261,7 @@ module.exports = {
 
       const newGame = await findCreateGame(userID, betCurrency);
       user.currency -= betCurrency;  // take user currency now and give it back later
-      user.save();
+      await user.save();
 
       // determine if dealer's OR player's hand = 21 and conclude game here
       if (checkCurrentNumber(newGame.playerHand) === 21 && checkCurrentNumber(newGame.dealerHand) === 21) {
