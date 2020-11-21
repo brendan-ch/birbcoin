@@ -3,7 +3,7 @@ const { findUser } = require('../helpers/user');
 const { findCreateGame, updateHand } = require("../helpers/blackjack");
 const Discord = require("discord.js");
 
-let messageQueue = {};
+// let messageQueue = {};
 
 const checkCurrentNumber = (deck, dealer = false) => {
   const conversionTable = {
@@ -137,7 +137,7 @@ const updateUserData = async (message, user, bet, outcome, blackjack = false) =>
   }
 
   // we want to keep the last message so that we can see what happened
-  delete messageQueue[message.author.id];
+  // delete messageQueue[message.author.id];
 
   return;
 }
@@ -196,11 +196,12 @@ const sendCurrentGame = async (message, game, prefix = ".") => {
   });
 
   // delete old message to prevent chaos
-  const newMessage = await message.channel.send(embed);
+  await message.channel.send(embed);
+  // const newMessage = await message.channel.send(embed);
 
-  const oldMessage = messageQueue[message.author.id];  // message sent in RESPONSE to user, not user's message
-  if (oldMessage && oldMessage.deletable) oldMessage.delete();
-  if (newMessage) messageQueue[message.author.id] = newMessage;
+  // const oldMessage = messageQueue[message.author.id];  // message sent in RESPONSE to user, not user's message
+  // if (oldMessage && oldMessage.deletable) oldMessage.delete();
+  // if (newMessage) messageQueue[message.author.id] = newMessage;
 };
 
 module.exports = {
