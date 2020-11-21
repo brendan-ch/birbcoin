@@ -181,7 +181,7 @@ const sendCurrentGame = async (message, game, prefix = ".") => {
     + `**__Player's hand__**\n\`${displayPlayerHand}\`\n**__Dealer's hand__**\n\`${game.showDealerCards ? displayDealerHand : displayDealerHandHidden}\``
     + `\n${message.author.username} is currently sitting at \`${playerValue}\`. `
     + (playerValue > 21 ? "They busted first!" : "")
-    + (playerValue === 21 && game.playerHand.length === 2 ? "They hit blackjack!" : "")
+    + (playerValue === 21 && game.playerHand.length === 2 && game.splitHand.length === 0 ? "They hit blackjack!" : "")
     + `\nThe dealer is currently sitting at \`${dealerValue}\`. `
     + (dealerValue > 21 ? "They busted!" : "")
     + (dealerValue === 21 && game.dealerHand.length === 2 ? "They hit blackjack!" : "")
