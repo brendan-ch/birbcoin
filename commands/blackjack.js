@@ -3,6 +3,8 @@ const { findUser } = require('../helpers/user');
 const { findCreateGame, updateHand } = require("../helpers/blackjack");
 const Discord = require("discord.js");
 
+let messageQueue = [];
+
 const checkCurrentNumber = (deck, dealer = false) => {
   const conversionTable = {
     "J": [10],
@@ -59,10 +61,15 @@ const concludeGame = (game) => {
 
 const updateUserData = async (message, user, bet, outcome, blackjack = false) => {
   let embed;
+  const game = await findCreateGame(user.userId, 0);
+
+  // only give/take half of total bet if split hand
+  const amount = game.splitHand.length !== 0 && game.splitHand[0].value !== null ? (Math.round(bet / 2)) : bet;
 
   switch (outcome) {
     case "tie":
-      user.currency += bet;
+      user.currency += amount;
+      game.bet -= amount;
 
       embed = new Discord.MessageEmbed({
         title: "Tie",
@@ -75,7 +82,7 @@ const updateUserData = async (message, user, bet, outcome, blackjack = false) =>
     case "dealer":
       embed = new Discord.MessageEmbed({
         title: "Dealer won!",
-        description: `${message.author.username} lost \`${bet}\` birbcoins and now has \`${user.currency}\` birbcoins. Better luck next time.`,
+        description: `${message.author.username} lost \`${amount}\` birbcoins and now has \`${user.currency}\` birbcoins. Better luck next time.`,
         color: "#ff0000"
       });
 
@@ -83,13 +90,14 @@ const updateUserData = async (message, user, bet, outcome, blackjack = false) =>
       
       break;
     case "player":
-      const winCurrency = blackjack ? bet + Math.round(bet * 1.5) : bet * 2;
+      const winCurrency = blackjack ? amount + Math.round(bet * 1.5) : amount * 2;
       
       user.currency += winCurrency;
+      game.bet -= amount;
 
       embed = new Discord.MessageEmbed({
         title: `${message.author.username} won!`,
-        description: `${message.author.username} won \`${blackjack ? Math.round(bet * 1.5) : bet}\` birbcoins! They now have \`${user.currency}\` birbcoins.`,
+        description: `${message.author.username} won \`${blackjack ? Math.round(amount * 1.5) : amount}\` birbcoins! They now have \`${user.currency}\` birbcoins.`,
         color: "#17d9ff"
       });
 
@@ -98,7 +106,8 @@ const updateUserData = async (message, user, bet, outcome, blackjack = false) =>
       break;
 
     default:
-      user.currency += bet;  
+      user.currency += amount;
+      game.bet -= amount;
 
       // something went wrong
       embed = new Discord.MessageEmbed({
@@ -112,10 +121,23 @@ const updateUserData = async (message, user, bet, outcome, blackjack = false) =>
       break;
   };
 
-  // we delete the blackjack game here
-  const game = await findCreateGame(user.userId, 0);
-  await game.deleteOne();
-  await user.save();
+  // we delete the blackjack game here. 
+  // UNLESS there is a split hand, then we discard player hand and move split hand to player hand
+  if (game.splitHand.length === 0 || game.splitHand[0].value === null) {
+    await game.deleteOne();
+    await user.save();
+  } else {
+    game.playerHand = [game.splitHand[0]];  // clear player hand
+    game.splitHand = [{
+      value: null  // will recognize that a split happened
+    }];
+
+    await user.save();
+    await game.save();
+  }
+
+  // we want to keep the last message so that we can see what happened
+  messageQueue[message.author.id] = undefined;
 }
 
 const updateDealerHand = (game) => {
@@ -128,7 +150,7 @@ const updateDealerHand = (game) => {
 }
 
 // this will be used several times to update user on current game
-const sendCurrentGame = (message, game, prefix = ".") => {
+const sendCurrentGame = async (message, game, prefix = ".") => {
   const playerValue = checkCurrentNumber(game.playerHand);
   
   // if we're not showing the dealer's cards, pick the first card and show that instead
@@ -155,7 +177,7 @@ const sendCurrentGame = (message, game, prefix = ".") => {
 
   const embed = new Discord.MessageEmbed({
     title: `${message.author.username}'s current game`,
-    description: `\`${game.bet}\` birbcoins\n\n`
+    description: `\`${game.bet}\` birbcoins total ${game.splitHand.length !== 0 && game.splitHand[0].value ? `(\`${Math.round(game.bet / 2)}\` in split deck)` : ``}\n\n`
     + `**__Player's hand__**\n\`${displayPlayerHand}\`\n**__Dealer's hand__**\n\`${game.showDealerCards ? displayDealerHand : displayDealerHandHidden}\``
     + `\n${message.author.username} is currently sitting at \`${playerValue}\`. `
     + (playerValue > 21 ? "They busted first!" : "")
@@ -165,13 +187,18 @@ const sendCurrentGame = (message, game, prefix = ".") => {
     + (dealerValue === 21 && game.dealerHand.length === 2 ? "They hit blackjack!" : "")
     // display options
     + `\n\nAvailable options: \`${prefix}blackjack <hit, stand`
-    // + (game.playerHand.length === 2 ? `, double` : "")
-    // + (game.playerHand.length === 2 && game.playerHand[0].value === game.playerHand[1].value ? ', split' : "")
+    + (game.playerHand.length === 2 && game.splitHand.length === 0 ? `, double` : "") 
+    + (game.playerHand.length === 2 && game.playerHand[0].value === game.playerHand[1].value && game.splitHand.length === 0 ? ', split' : "")
     + `>\``
     // The JSON.stringify is temporary and will be removed after I properly format everything
   });
 
-  message.channel.send(embed);
+  // delete old message to prevent chaos
+  const newMessage = await message.channel.send(embed);
+
+  const oldMessage = messageQueue[message.author.id];  // message sent in RESPONSE to user, not user's message
+  if (oldMessage && oldMessage.deletable) oldMessage.delete();
+  if (newMessage) messageQueue[message.author.id] = newMessage;
 };
 
 module.exports = {
@@ -240,19 +267,19 @@ module.exports = {
 
         updateDealerHand(newGame);
         sendCurrentGame(message, newGame, prefix);
-        updateUserData(message, user, newGame.bet, outcome, true);
+        await updateUserData(message, user, newGame.bet, outcome, true);
       } else if (checkCurrentNumber(newGame.playerHand) === 21) {  // player blackjack; pay out 1.5x
         const outcome = "player";
         
         updateDealerHand(newGame);
         sendCurrentGame(message, newGame, prefix);
-        updateUserData(message, user, newGame.bet, outcome, true);
+        await updateUserData(message, user, newGame.bet, outcome, true);
       } else if (checkCurrentNumber(newGame.dealerHand) === 21) {
         const outcome = "dealer";
 
         updateDealerHand(newGame);
         sendCurrentGame(message, newGame, prefix);
-        updateUserData(message, user, newGame.bet, outcome, true);
+        await updateUserData(message, user, newGame.bet, outcome, true);
       } else {
         sendCurrentGame(message, newGame, prefix);
       }
@@ -295,7 +322,6 @@ module.exports = {
         updateDealerHand(game);
 
         // we check if there's cards in splitHand, if there are then we move splitHand cards to playerHand
-
         sendCurrentGame(message, game, prefix);
 
         const outcome = concludeGame(game);
@@ -304,19 +330,88 @@ module.exports = {
 
         break;
 
-      // case "double":
-        // check if there's only two cards
-        // take more money here
+      case "double":
+        // send error if there's more/less than two cards and if there is/was a split hand
+        if (game.playerHand.length !== 2 || game.splitHand.length !== 0) {
+          const embed = new Discord.MessageEmbed({
+            title: "Unable to double at this time",
+            description: "This option is only available at the beginning of a game.",
+            color: "#ff0000"
+          });
 
-        // updateHand(game, "player");
-        // concludeGame(game)
+          message.channel.send(embed);
 
-        // break;
+          break;
+        }
 
-      // case "split":
-        // check if two cards are matching
+        // check if enough currency
+        if (user.currency < game.bet) {
+          const embed = new Discord.MessageEmbed({
+            title: "Not enough birbcoins",
+            description: message.author.username + " is missing `" + (game.bet - user.currency) + "` birbcoins.",
+            color: "#ff0000"
+          });
+
+          message.channel.send(embed);
+
+          break;
+        };
+
+        // yoink more money here
+        user.currency -= game.bet;
+        game.bet += game.bet;
+        await user.save();
+
+        updateHand(game, "player");
+        updateDealerHand(game);
+        sendCurrentGame(message, game, prefix);
+
+        await game.save();
+        updateUserData(message, user, game.bet, concludeGame(game));
+
+        break;
+
+      case "split":
+        // check if two cards are matching and no existing split hand exists
+        if ((game.playerHand.length !== 2 || game.playerHand[0].value !== game.playerHand[1].value || game.splitHand.length !== 0)) {
+          const embed = new Discord.MessageEmbed({
+            title: "Unable to split at this time",
+            description: "This option is only available at the beginning of a game if two player cards in a hand have the same value.",
+            color: "#ff0000"
+          });
+
+          message.channel.send(embed);
+
+          break;
+        };
+
+        // check if enough currency
+        if (user.currency < game.bet) {
+          const embed = new Discord.MessageEmbed({
+            title: "Not enough birbcoins",
+            description: message.author.username + " is missing `" + (game.bet - user.currency) + "` birbcoins.",
+            color: "#ff0000"
+          });
+
+          message.channel.send(embed);
+
+          break;
+        };
+
+        // yoink more money here
+        user.currency -= game.bet;
+        game.bet += game.bet;
+        await user.save();
+        
         // move card to splitHand
         // continue playing playerHand as usual
+        game.splitHand.push(game.playerHand[1]);
+        game.playerHand.splice(1, 1);
+
+        sendCurrentGame(message, game, prefix);
+        await game.save();
+
+        break;
 
       default:
         const embed = new Discord.MessageEmbed({
