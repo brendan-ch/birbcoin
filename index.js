@@ -62,6 +62,12 @@ client.on('message', async (message) => {
   const server = serverId ? await findServer(serverId) : undefined;
   const prefix = server ? server.prefix : ".";
 
+  // if message was sent by birbcoin bot, log that message
+  if (message.author.id === client.user.id) {
+    console.log(`(message) (bot in ${serverId || "DMs"}) ${message.embeds.length > 0 ? `embed\ntitle: "${message.embeds[0].title}"\ndescription: "${message.embeds[0].description}"` 
+    : message.content}`);
+  }
+
   // check message against prefix and author
   if (!message.content.startsWith(prefix) || message.author.bot) return;
 
@@ -71,7 +77,7 @@ client.on('message', async (message) => {
   const command = client.commands.get(commandName)
     || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-  console.log(`${message.author.id} in ${serverId || "DMs"}: ${message.content}`);
+  console.log(`(message) (user ${message.author.id} in ${serverId || "DMs"}) ${message.content}`);
 
   // if command doesn't exist, return early
   // likewise, if command is disabled by admin, return early
