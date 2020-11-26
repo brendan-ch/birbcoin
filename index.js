@@ -49,6 +49,7 @@ client.on('ready', () => {
 
   if (statusMessage) {
     client.user.setActivity(statusMessage, { type: 'PLAYING' })
+      .then(() => console.log(`Set status message to "Playing ${statusMessage}".`))
       .catch((err) => console.error(err));
   }
 });
@@ -69,6 +70,8 @@ client.on('message', async (message) => {
   const commandName = args.shift().toLowerCase();  // gets the first thing in args
   const command = client.commands.get(commandName)
     || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+  console.log(`${message.author.id}: command ${commandName} with args ${args.length === 0 ? "none" : args.join(', ')}`);
 
   // if command doesn't exist, return early
   // likewise, if command is disabled by admin, return early
