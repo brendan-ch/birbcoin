@@ -207,12 +207,13 @@ const sendCurrentGame = async (message, game, prefix = ".") => {
 module.exports = {
   name: "blackjack",
   aliases: ["21"],
+  allowDMs: true,
   description: "Play blackjack and lose even more of your money!",
   type: "Wager your birbcoins!",
   execute: async (message, args) => {
-    const serverID = message.guild.id;
-    const server = await findServer(serverID);
-    const prefix = server.prefix;
+    const serverID = message.guild ? message.guild.id : undefined;
+    const server = serverID ? await findServer(serverID) : undefined;
+    const prefix = server ? server.prefix : ".";
 
     // we need this to check currency
     const userID = message.author.id;

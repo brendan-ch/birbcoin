@@ -5,12 +5,13 @@ const { findUser } = require('../helpers/user');
 module.exports = {
   name: "currency",
   type: "General",
+  allowDMs: true,
   aliases: ['birbcoins'],
   description: "Find out how many birbcoins you have.",
   execute(message, args) {
     // id of user who sent the message
     const userId = message.author.id;
-    const serverId = message.guild.id;
+    const serverId = message.guild ? message.guild.id : undefined;
 
     // username; includes tag
     const username = message.author.tag;

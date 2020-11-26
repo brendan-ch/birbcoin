@@ -7,11 +7,14 @@ const claimCurrency = Number(process.env.CLAIM_CURRENCY);  // amount of currency
 module.exports = {
   name: 'claim',
   type: "General",
-  description: 'Claim your hourly 50 birbcoins.',
+  allowDMs: true,
+  description: 'Claim your hourly birbcoins.',
   execute: async (message, args) => {
+    const serverId = message.guild ? message.guild.id : undefined;
+
     const userId = message.author.id;
     const username = message.author.tag;
-    const user = await findUser(userId, username, true, message.guild.id, message.client);
+    const user = await findUser(userId, username, true, serverId, message.client);
     const lastClaimed = user.lastClaimedDaily;
 
     const now = new Date();

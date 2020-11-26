@@ -6,15 +6,16 @@ module.exports = {
   name: 'bet',  // used to activate command
   aliases: ['roulette'],
   description: 'Lose all your birbcoins!',
+  allowDMs: true,
   type: "Wager your birbcoins!",
   usage: "<number of birbcoins>",
   execute: async (message, args) => {
-    const serverId = message.guild.id;
+    const serverId = message.guild ? message.guild.id : undefined;
     // invalid # birbcoins provided
     if (args.length === 0 || (args[0] !== "all" && isNaN(args[0]))) {
       // get server id to get prefix
-      const server = await findServer(serverId);
-      const prefix = server.prefix;
+      const server = serverId ? await findServer(serverId) : undefined;
+      const prefix = server ? server.prefix : ".";
       
       const embed = new Discord.MessageEmbed({
         title: "Invalid argument provided",
