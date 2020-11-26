@@ -71,7 +71,7 @@ client.on('message', async (message) => {
   const command = client.commands.get(commandName)
     || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-  console.log(`${message.author.id}: command ${commandName} with args ${args.length === 0 ? "none" : args.join(', ')}`);
+  console.log(`${message.author.id} in ${serverId || "DMs"}: ${message.content}`);
 
   // if command doesn't exist, return early
   // likewise, if command is disabled by admin, return early
