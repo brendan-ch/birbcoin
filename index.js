@@ -76,11 +76,14 @@ client.on('message', async (message) => {
   // if command doesn't exist, return early
   // likewise, if command is disabled by admin, return early
   // finally, if command is an admin command, return early if user doesn't have sufficient permission
-  if (server) {
-    if (!command || server.disabledCommands.includes(commandName) || (command.type === "Admin" && !message.member.hasPermission('ADMINISTRATOR'))) return;
-  } else {
-    if (!command || !command.allowDMs) return;
-  }
+  if ((server && 
+    (!command || server.disabledCommands.includes(commandName) || (command.type === "Admin" && !message.member.hasPermission('ADMINISTRATOR'))))
+  || (!server &&
+    (!command || !command.allowDMs))
+  ) {
+    console.log("Error: check failed. Command was not executed.");
+    return;
+  } 
 
   // retrieve the command and run execute method on it
   command.execute(message, args);
