@@ -54,12 +54,12 @@ client.on('ready', () => {
 });
 
 client.on('message', async (message) => {
-  if (!message.guild) return;
+  // if (!message.guild) return;
 
   // get server ID and prefix
-  const serverId = message.guild.id;
-  const server = await findServer(serverId);
-  const prefix = server.prefix;
+  const serverId = message.guild ? message.guild.id : undefined;
+  const server = serverId ? await findServer(serverId) : undefined;
+  const prefix = server ? server.prefix : ".";
 
   // check message against prefix and author
   if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -73,7 +73,11 @@ client.on('message', async (message) => {
   // if command doesn't exist, return early
   // likewise, if command is disabled by admin, return early
   // finally, if command is an admin command, return early if user doesn't have sufficient permission
-  if (!command || server.disabledCommands.includes(commandName) || (command.type === "Admin" && !message.member.hasPermission('ADMINISTRATOR'))) return;
+  if (server) {
+    if (!command || server.disabledCommands.includes(commandName) || (command.type === "Admin" && !message.member.hasPermission('ADMINISTRATOR'))) return;
+  } else {
+    if (!command || !command.allowDMs) return;
+  }
 
   // retrieve the command and run execute method on it
   command.execute(message, args);
