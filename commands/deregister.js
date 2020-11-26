@@ -27,7 +27,7 @@ module.exports = {
       // find user by id
       user = await findUser(mention.id, mention.user.tag, false);
     } else if (isNaN(args[0])) {  // user's tag (search for user using tag)
-      user = await findUserByTag(args[0]);
+      user = await findUserByTag(args.join(' '));
     } else {  // find by provided user id;
       user = await findUser(args[0], undefined, false);
     };
