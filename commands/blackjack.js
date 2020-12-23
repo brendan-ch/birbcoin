@@ -265,28 +265,26 @@ module.exports = {
       user.currency -= betCurrency;  // take user currency now and give it back later
       await user.save();
 
+      const currentNumberPlayer = checkCurrentNumber(newGame.playerHand);
+      const currentNumberDealer = checkCurrentNumber(newGame.dealerHand);
+      let outcome = "tie";
+
       // determine if dealer's OR player's hand = 21 and conclude game here
-      if (checkCurrentNumber(newGame.playerHand) === 21 && checkCurrentNumber(newGame.dealerHand) === 21) {
-        const outcome = "tie";
-
-        updateDealerHand(newGame);
-        sendCurrentGame(message, newGame, prefix);
-        await updateUserData(message, user, newGame.bet, outcome, true);
-      } else if (checkCurrentNumber(newGame.playerHand) === 21) {  // player blackjack; pay out 1.5x
-        const outcome = "player";
-        
-        updateDealerHand(newGame);
-        sendCurrentGame(message, newGame, prefix);
-        await updateUserData(message, user, newGame.bet, outcome, true);
-      } else if (checkCurrentNumber(newGame.dealerHand) === 21) {
-        const outcome = "dealer";
-
-        updateDealerHand(newGame);
-        sendCurrentGame(message, newGame, prefix);
-        await updateUserData(message, user, newGame.bet, outcome, true);
+      if (currentNumberDealer === 21 && currentNumberPlayer === 21) {
+        outcome = "tie";
+      } else if (currentNumberPlayer === 21) {  // player blackjack; pay out 1.5x
+        outcome = "player";
+      } else if (currentNumberDealer === 21) {
+        outcome = "dealer";
       } else {
         sendCurrentGame(message, newGame, prefix);
-      }
+
+        return;
+      };
+
+      updateDealerHand(newGame);
+      sendCurrentGame(message, newGame, prefix);
+      await updateUserData(message, user, newGame.bet, outcome, true);
 
       return;
     }
@@ -315,9 +313,6 @@ module.exports = {
         };
 
         sendCurrentGame(message, game, prefix);
-
-        // we check if there's cards in splitHand, if there are then we move splitHand cards to playerHand
-
 
         await game.save();
         break;
