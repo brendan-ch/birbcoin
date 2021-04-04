@@ -1,5 +1,5 @@
 # birbcoin
-A Discord currency bot. Invite link [here.](https://discord.com/oauth2/authorize?client_id=772336032044941322&scope=bot&permissions=3072)
+A Discord currency bot.
 
 # Usage
 - `.claim`: Claim birbcoins on a regular basis.
