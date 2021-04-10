@@ -1,4 +1,5 @@
-require('dotenv').config();
+import dotenv = require('dotenv');
+dotenv.config();
 
 import mongoose = require('mongoose');  // for managing database
 import Discord = require('discord.js');  // for interfacing with Discord API
