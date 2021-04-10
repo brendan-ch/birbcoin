@@ -1,12 +1,16 @@
-const Discord = require('discord.js');
-const { findServer } = require("../helpers/server");
+import Discord from 'discord.js';
+import { findServer } from "../helpers/server";
+import { Command } from '../typedefs';
 
-module.exports = {
+const enableCommand: Command = {
   name: 'enable',
   description: "Enable a command previously turned off by the `disable` command.",
   type: "Admin",
+  allowDMs: false,
   usage: '<command>',
   execute: async (message, args) => {
+    if (!message.guild) return;
+
     // get server data
     const serverId = message.guild.id;
     const server = await findServer(serverId);
@@ -49,3 +53,5 @@ module.exports = {
     
   }
 }
+
+export default enableCommand;

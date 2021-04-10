@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { IUser } from '../typedefs';
 
 const user = new mongoose.Schema({
   userId: String,  // id of the user; doesn't change
@@ -8,4 +9,4 @@ const user = new mongoose.Schema({
   usernameDiscord: String
 });
 
-module.exports = mongoose.model('user', user);
+export default mongoose.model<IUser>('user', user);

@@ -1,8 +1,8 @@
-const User = require('../models/user');
+import User from '../models/user';
 // amount of currency user starts with
 const defaultCurrency = process.env.DEFAULT_CURRENCY;
 
-const findUserByTag = async (userTag) => {
+const findUserByTag = async (userTag: string) => {
   const user = await User.findOne({
     usernameDiscord: userTag
   }).exec();
@@ -10,7 +10,7 @@ const findUserByTag = async (userTag) => {
   return user;
 }
 
-const findUser = async (userId, username = undefined, createNewIfNull = true, serverId = undefined, client = undefined) => {
+const findUser = async (userId: string, username?: string, createNewIfNull = true, serverId?: string) => {
   // returns null if no user
   const user = await User.findOne({
     userId: userId
@@ -20,19 +20,19 @@ const findUser = async (userId, username = undefined, createNewIfNull = true, se
     // what we'll use to check if user document is updated
     // not all keys are here, because we can't set default values for all of them
     // the username is set below this because we need to update username regardless of whether it exists already
-    const userValidator = {
-      "servers": [],
-    };
+    // const userValidator = {
+    //   "servers": [],
+    // };
 
-    const userKeys = Object.keys(user.toObject());
-    const userValidatorKeys = Object.keys(userValidator);
+    // const userKeys = Object.keys(user.toObject());
+    // const userValidatorKeys = Object.keys(userValidator);
 
-    // loop through validator keys
-    userValidatorKeys.forEach(value => {
-      if (!userKeys.includes(value)) {
-        user[value] = userValidator[value];  // update user document with default key
-      }
-    });
+    // // loop through validator keys
+    // userValidatorKeys.forEach(value => {
+    //   if (!userKeys.includes(value)) {
+    //     user[value] = userValidator[value];  // update user document with default key
+    //   }
+    // });
 
     // update user's username, in case it changed
     if (username) user.usernameDiscord = username;
@@ -99,5 +99,4 @@ const findUser = async (userId, username = undefined, createNewIfNull = true, se
   }
 };
 
-module.exports.findUser = findUser;
-module.exports.findUserByTag = findUserByTag;
+export { findUser, findUserByTag };

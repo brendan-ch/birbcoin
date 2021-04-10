@@ -1,11 +1,13 @@
-const Blackjack = require('../models/blackjack');
-const decks = process.env.BLACKJACK_DECKS || 1;
+import BlackjackGame from '../models/blackjack';
+const decks = Number(process.env.BLACKJACK_DECKS) || 1;
+
+import { Blackjack } from '../typedefs';
 
 const constructDeck = (numDecks = 1) => {
-  const suits = ["H", "S", "C", "D"];
-  const values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+  const suits: Array<Blackjack.Suit> = ["H", "S", "C", "D"];
+  const values: Array<Blackjack.Value> = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 
-  let deck = [];
+  let deck: Blackjack.Deck = [];
   for (let i = 1; i <= numDecks; i += 1) {
     suits.forEach(suit => {
       values.forEach(value => {
@@ -20,7 +22,8 @@ const constructDeck = (numDecks = 1) => {
   return deck;
 };
 
-const shuffleDeck = (deck) => {
+const shuffleDeck = (deck: Blackjack.Deck) => {
+  // make copy of deck
   let newDeck = deck.slice(0);
 
   for (let i = newDeck.length - 1; i > 0; i--) {
@@ -31,7 +34,7 @@ const shuffleDeck = (deck) => {
   return newDeck;
 };
 
-const updateHand = (game, hand = "player") => {
+const updateHand = (game: Blackjack.IGame, hand = "player") => {
   // update player's or dealer's hand
   if (hand === "player") {
     game.playerHand.push(game.deck[0]);
@@ -44,8 +47,8 @@ const updateHand = (game, hand = "player") => {
 
 // gets an existing game, or create a new one if it doesn't exist
 // run on .blackjack or .blackjack currency
-const findCreateGame = async (userID, bet = 0) => {
-  const game = await Blackjack.findOne({
+const findCreateGame = async (userID: string, bet = 0) => {
+  const game = await BlackjackGame.findOne({
     userId: userID
   }).exec();
 
@@ -53,7 +56,7 @@ const findCreateGame = async (userID, bet = 0) => {
     return game;
   } else if (bet > 0) {
     // create new game document
-    let newGame = new Blackjack({
+    let newGame = new BlackjackGame({
       userId: userID,
       bet: bet,
       deck: shuffleDeck(constructDeck(decks)),
@@ -64,6 +67,7 @@ const findCreateGame = async (userID, bet = 0) => {
     });
 
     // we'll update player and dealer hands first before saving/returning
+    // ...what was past birb thinking????????
     updateHand(newGame, "player");
     updateHand(newGame, "dealer");
     updateHand(newGame, "player");
@@ -110,5 +114,4 @@ const findCreateGame = async (userID, bet = 0) => {
 // console.log(newGame.playerHand);
 // console.log(newGame.dealerHand);
 
-module.exports.findCreateGame = findCreateGame;
-module.exports.updateHand = updateHand;
+export { findCreateGame, updateHand }

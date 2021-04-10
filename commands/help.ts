@@ -1,8 +1,9 @@
-const Discord = require('discord.js');
-const { findServer } = require('../helpers/server');
+import Discord from 'discord.js';
+import { findServer } from '../helpers/server';
+import { Command } from '../typedefs';
 const adminCategory = "Admin";
 
-module.exports = {
+const helpCommand: Command = {
   name: "help",
   type: "General",
   allowDMs: true,
@@ -14,14 +15,15 @@ module.exports = {
     
     // get existing commands
     const { commands } = message.client;
+    if (!commands) return;
     const commandsArray = commands.array();
 
     // these will be displayed in the embed
-    let categories = [];
+    let categories: Array<string> = [];
     for (const command of commandsArray) {
       if ((!categories || !categories.includes(command.type)) 
         && (
-          (message.guild && ((message.member.hasPermission('ADMINISTRATOR') && command.type === adminCategory) || (command.type !== adminCategory)))
+          (message.guild && message.member && ((message.member.hasPermission('ADMINISTRATOR') && command.type === adminCategory) || (command.type !== adminCategory)))
         ||
           (!message.guild && command.allowDMs)
         )
@@ -71,3 +73,5 @@ module.exports = {
     }
   }
 }
+
+export default helpCommand;

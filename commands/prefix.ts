@@ -1,34 +1,38 @@
-const Discord = require('discord.js');
-const { findServer } = require('../helpers/server');
+import Discord from 'discord.js';
+import { findServer } from '../helpers/server';
+import { Command } from '../typedefs';
 
 // const validPrefixes = ['.', ',', '!', '?', '/', '<', '>', ';', '~'];
 const validPrefixes = '.,!?/<>;~';
 
-module.exports = {
+const prefixCommand: Command = {
   name: 'prefix',
   description: 'List the prefix for this server, or change the prefix for this server if one is specified.',
   type: "Admin",
+  allowDMs: false,
   usage: '<new prefix (optional)>',
-  execute(message, args) {
+  execute: async (message, args) => {
+    if (!message.guild || !message.member) return;
+
     const serverId = message.guild.id;
 
     // return current prefix
     if (args.length === 0) {
-      findServer(serverId).then((server) => {
-        const hasAdmin = message.member.hasPermission('ADMINISTRATOR');
+      const server = await findServer(serverId)
 
-        const embed = new Discord.MessageEmbed({
-          title: "Server prefix",
-          description: "The current server prefix is `" + server.prefix + "`." + 
-            (hasAdmin ? 
-              " Available prefixes include: `" + validPrefixes + "`."
-            :
-              ""
-            ),
-        });
+      const hasAdmin = message.member.hasPermission('ADMINISTRATOR');
 
-        message.channel.send(embed);
-      })
+      const embed = new Discord.MessageEmbed({
+        title: "Server prefix",
+        description: "The current server prefix is `" + server.prefix + "`." + 
+          (hasAdmin ? 
+            " Available prefixes include: `" + validPrefixes + "`."
+          :
+            ""
+          ),
+      });
+
+      message.channel.send(embed);
 
       return;
     }
@@ -76,3 +80,5 @@ module.exports = {
     })
   }
 }
+
+export default prefixCommand;

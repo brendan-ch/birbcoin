@@ -1,18 +1,20 @@
-const Discord = require('discord.js');
-const { findServer } = require('../helpers/server');
-const { findUser } = require('../helpers/user');
+import Discord from 'discord.js';
+import { findServer } from '../helpers/server';
+import { findUser } from '../helpers/user';
 
-module.exports = {
+import { Command, IUser, IServer } from '../typedefs';
+
+const betCommand: Command = {
   name: 'bet',  // used to activate command
   aliases: ['roulette'],
   description: 'Lose all your birbcoins!',
   allowDMs: true,
   type: "Wager your birbcoins!",
   usage: "<number of birbcoins>",
-  execute: async (message, args) => {
+  execute: async (message: Discord.Message, args: Array<string>) => {
     const serverId = message.guild ? message.guild.id : undefined;
     // invalid # birbcoins provided
-    if (args.length === 0 || (args[0] !== "all" && isNaN(args[0]))) {
+    if (args.length === 0 || (args[0] !== "all" && isNaN(Number(args[0])))) {
       // get server id to get prefix
       const server = serverId ? await findServer(serverId) : undefined;
       const prefix = server ? server.prefix : ".";
@@ -32,7 +34,10 @@ module.exports = {
     // get user details
     const userId = message.author.id;
     const username = message.author.tag;
-    const user = await findUser(userId, username, true, serverId, message.client);
+    const user = await findUser(userId, username, true, serverId);
+
+    // add better error handling later -@unnameduser95
+    if (!user) return;
 
     // get # birbcoins to bet from args
     // if args[0] === all, get user.currency and set that as bet currency
@@ -95,3 +100,5 @@ module.exports = {
     }
   }
 }
+
+export default betCommand;

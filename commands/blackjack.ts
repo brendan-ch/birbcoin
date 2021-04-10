@@ -1,30 +1,35 @@
-const { findServer } = require("../helpers/server");
-const { findUser } = require('../helpers/user');
-const { findCreateGame, updateHand } = require("../helpers/blackjack");
-const Discord = require("discord.js");
+import Discord from "discord.js";
+import { findServer } from "../helpers/server";
+import { findUser } from '../helpers/user';
+import { findCreateGame, updateHand } from "../helpers/blackjack";
+
+import { Blackjack, Command, IUser } from '../typedefs';
 
 // let messageQueue = {};
 
-const checkCurrentNumber = (deck, dealer = false) => {
-  const conversionTable = {
-    "J": [10],
-    "Q": [10],
-    "K": [10],
-    "A": [0],  // calculate aces afterwards
-  };
+const checkCurrentNumber = (deck: Blackjack.Deck, dealer = false) => {
+  // const conversionTable = {
+  //   "J": [10],
+  //   "Q": [10],
+  //   "K": [10],
+  //   "A": [0],  // calculate aces afterwards
+  // };
+
+  const conversionValues = ["J", "Q", "K"];
 
   let currentValue = 0;
   let numAces = 0;
 
   deck.forEach(card => {
     const value = card.value;
-    let numericValue = isNaN(value) ? conversionTable[value][0] : parseInt(value);
 
+    // check what numeric value the card represents
     if (value === "A") {
       numAces++;
-    };
-
-    currentValue += numericValue;
+    } else if (value !== null) {
+      const numericValue = conversionValues.includes(value) ? 10 : parseInt(value);
+      currentValue += numericValue;
+    }
   });
 
   // calculate aces
@@ -36,8 +41,8 @@ const checkCurrentNumber = (deck, dealer = false) => {
   return currentValue;
 };
 
-const concludeGame = (game) => {
-  let outcome;  // "tie", "dealer", "player"
+const concludeGame = (game: Blackjack.IGame) => {
+  let outcome: "tie" | "dealer" | "player";  // "tie", "dealer", "player"
   
   const playerValue = checkCurrentNumber(game.playerHand);
   const dealerValue = checkCurrentNumber(game.dealerHand);
@@ -59,9 +64,16 @@ const concludeGame = (game) => {
   return outcome;
 };
 
-const updateUserData = async (message, user, bet, outcome, blackjack = false) => {
+const updateUserData = async (
+  message: Discord.Message, 
+  user: IUser, 
+  bet: number, 
+  outcome: "tie" | "dealer" | "player", 
+  blackjack = false
+) => {
   let embed;
   const game = await findCreateGame(user.userId, 0);
+  if (!game) return;
 
   // only give/take half of total bet if split hand
   const amount = game.splitHand.length !== 0 && game.splitHand[0].value !== null ? (Math.round(bet / 2)) : bet;
@@ -129,6 +141,7 @@ const updateUserData = async (message, user, bet, outcome, blackjack = false) =>
   } else {
     game.playerHand = [game.splitHand[0]];  // clear player hand
     game.splitHand = [{
+      suit: null,
       value: null  // will recognize that a split happened
     }];
 
@@ -142,7 +155,7 @@ const updateUserData = async (message, user, bet, outcome, blackjack = false) =>
   return;
 }
 
-const updateDealerHand = (game) => {
+const updateDealerHand = (game: Blackjack.IGame) => {
   // here, we indicate that the dealer's full hand can be shown
   game.showDealerCards = true;
 
@@ -152,7 +165,7 @@ const updateDealerHand = (game) => {
 }
 
 // this will be used several times to update user on current game
-const sendCurrentGame = async (message, game, prefix = ".") => {
+const sendCurrentGame = async (message: Discord.Message, game: Blackjack.IGame, prefix = ".") => {
   const playerValue = checkCurrentNumber(game.playerHand);
   
   // if we're not showing the dealer's cards, pick the first card and show that instead
@@ -168,13 +181,19 @@ const sendCurrentGame = async (message, game, prefix = ".") => {
   let displayPlayerHand = "";
   let displayDealerHand = "";
 
+  if (!game.dealerHand[0].suit) return;
   const displayDealerHandHidden = `${game.dealerHand[0].value} of ${suits[game.dealerHand[0].suit]}\n???\n`
 
   game.playerHand.forEach(card => {
-    displayPlayerHand += `${card.value} of ${suits[card.suit]}\n`;
+    // check if card suit is valid
+    if (card.suit) {
+      displayPlayerHand += `${card.value} of ${suits[card.suit]}\n`;
+    }
   });
   game.dealerHand.forEach(card => {
-    displayDealerHand += `${card.value} of ${suits[card.suit]}\n`;
+    if (card.suit) {
+      displayDealerHand += `${card.value} of ${suits[card.suit]}\n`;  
+    }
   })
 
   const embed = new Discord.MessageEmbed({
@@ -204,12 +223,13 @@ const sendCurrentGame = async (message, game, prefix = ".") => {
   // if (newMessage) messageQueue[message.author.id] = newMessage;
 };
 
-module.exports = {
+const blackjackCommand: Command = {
   name: "blackjack",
   aliases: ["21"],
   allowDMs: true,
   description: "Play blackjack and lose even more of your money!",
   type: "Wager your birbcoins!",
+  usage: "<amount of birbcoins>",
   execute: async (message, args) => {
     const serverID = message.guild ? message.guild.id : undefined;
     const server = serverID ? await findServer(serverID) : undefined;
@@ -218,6 +238,7 @@ module.exports = {
     // we need this to check currency
     const userID = message.author.id;
     const user = await findUser(userID, message.author.tag, true, serverID);
+    if (!user) return;
 
     const game = await findCreateGame(userID, 0);  // get current game if it exists
     
@@ -234,7 +255,7 @@ module.exports = {
         return;
       }
       
-      else if (args[0] !== "all" && (isNaN(args[0]) || args[0].includes('.') || args[0] <= 0)) {
+      else if (args[0] !== "all" && (isNaN(Number(args[0])) || args[0].includes('.') || Number(args[0]) <= 0)) {
         const embed = new Discord.MessageEmbed({
           title: "Invalid value",
           description: "Please enter a positive integer.",
@@ -262,6 +283,7 @@ module.exports = {
       };
 
       const newGame = await findCreateGame(userID, betCurrency);
+      if (!newGame) return;
       user.currency -= betCurrency;  // take user currency now and give it back later
       await user.save();
 
@@ -429,3 +451,5 @@ module.exports = {
     };
   }
 }
+
+export default blackjackCommand;

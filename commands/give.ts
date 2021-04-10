@@ -1,18 +1,26 @@
-const Discord = require('discord.js');
-const { findServer } = require('../helpers/server');
-const { findUser } = require('../helpers/user');
+import Discord from 'discord.js';
+import { findServer } from '../helpers/server';
+import { findUser } from '../helpers/user';
+import { Command } from '../typedefs';
 
-module.exports = {
+const giveCommand: Command = {
   name: "give",
   aliases: ['send'],
   type: "General",
+  allowDMs: false,
   description: "Give someone else some birbcoins.",
   usage: "@<user> <number of birbcoins>",
   execute: async (message, args) => {
+    if (!message.guild) return;
+
     const serverId = message.guild.id;
 
     // no user or invalid # birbcoins provided
-    if (args.length === 0 || !message.mentions.members.first() || (args[1] !== "all" && isNaN(args[1]))) {
+    if (
+      args.length === 0 || 
+      !message.mentions.members || 
+      !message.mentions.members.first() || 
+      (args[1] !== "all" && isNaN(Number(args[1])))) {
       // get server id to get prefix
       findServer(serverId).then(server => {
         const prefix = server.prefix;
@@ -29,11 +37,14 @@ module.exports = {
     };
 
     // get server member id; same as user id
-    const recipientId = message.mentions.members.first().id;
-    const recipientUsername = message.mentions.members.first().user.tag;  // get username from user object
+    const recipientMember = message.mentions.members.first();
+    if (!recipientMember) return;
+
+    const recipientId = recipientMember.id;
+    const recipientUsername = recipientMember.user.tag;  // get username from user object
     
     // get recipient with id; don't create new one if no user found
-    const recipient = await findUser(recipientId, recipientUsername, false, serverId, message.client);
+    const recipient = await findUser(recipientId, recipientUsername, false, serverId);
     const recipientUsernameShort = recipientUsername.slice(0, -5);
 
     if (recipient === null) {
@@ -52,6 +63,7 @@ module.exports = {
     const userId = message.author.id;
     const username = message.author.tag;
     const user = await findUser(userId, username);
+    if (!user) return;
 
     // from here on we can assume that all arguments are correct
     // this is the amount of currency to give
@@ -109,3 +121,5 @@ module.exports = {
     message.channel.send(embed);
   }
 }
+
+export default giveCommand;

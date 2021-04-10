@@ -1,16 +1,19 @@
-const Discord = require('discord.js');
-const e = require('express');
-const { findUser, findUserByTag } = require('../helpers/user');
+import Discord from 'discord.js';
+import { findUser, findUserByTag } from '../helpers/user';
+import { Command } from '../typedefs';
 
-module.exports = {
+const deregisterCommand: Command = {
   name: "deregister",
   type: "Admin",
   usage: "<mention | user's tag (e.g. user#0001) | user ID>",
+  allowDMs: false,
   description: "Deregister a user from this server's leaderboard.",
   execute: async (message, args) => {
+    if (!message.guild) return;
+
     const serverId = message.guild.id;
 
-    if (args.length === 0) {  // no user provided
+    if (args.length === 0 || !message.mentions.members) {  // no user provided
       const embed = new Discord.MessageEmbed({
         title: "No user provided",
         description: "Please provide a mention, a user's tag (e.g. `user#0001`), or a user ID.",
@@ -26,7 +29,7 @@ module.exports = {
     if (mention) {
       // find user by id
       user = await findUser(mention.id, mention.user.tag, false);
-    } else if (isNaN(args[0])) {  // user's tag (search for user using tag)
+    } else if (isNaN(Number(args[0]))) {  // user's tag (search for user using tag)
       user = await findUserByTag(args.join(' '));
     } else {  // find by provided user id;
       user = await findUser(args[0], undefined, false);
@@ -67,3 +70,5 @@ module.exports = {
     message.channel.send(embed);
   }
 }
+
+export default deregisterCommand;

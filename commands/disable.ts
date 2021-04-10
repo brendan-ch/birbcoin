@@ -1,13 +1,17 @@
-const Discord = require('discord.js');
-const { findServer } = require('../helpers/server');
+import Discord from 'discord.js';
+import { findServer } from '../helpers/server';
+import { Command } from '../typedefs';
 const adminCategory = "Admin";
 
-module.exports = {
+const disableCommand: Command = {
   name: "disable",
   description: "List all disabled commands, or disable a certain command for this server.",
   type: "Admin",
+  allowDMs: false,
   usage: "<command (optional)>",
   execute: async (message, args) => {
+    if (!message.guild) return;
+
     // get server data
     const serverId = message.guild.id;
     const server = await findServer(serverId);
@@ -26,8 +30,9 @@ module.exports = {
       return;
     };
 
-    // generate array of all available commands
+    // get array of all available commands
     const commands = message.client.commands;
+    if (!commands) return;
 
     // to get aliases and other methods
     const command = commands.get(args[0]);
@@ -90,3 +95,5 @@ module.exports = {
     
   } 
 }
+
+export default disableCommand;

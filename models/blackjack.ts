@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import { Blackjack } from '../typedefs';
 
-const Blackjack = new mongoose.Schema({
+const BlackjackGame = new mongoose.Schema({
   userId: String,
   bet: { type: Number, min: 0 },  // amount the user is betting
   deck: Array,  // deck of "cards". can have as many decks possible
@@ -10,4 +11,4 @@ const Blackjack = new mongoose.Schema({
   showDealerCard: Boolean
 });
 
-module.exports = mongoose.model("blackjackGame", Blackjack);
+export default mongoose.model<Blackjack.IGame>("blackjackGame", BlackjackGame);

@@ -1,19 +1,23 @@
-const Discord = require('discord.js');
+import Discord from 'discord.js';
 const leaderboardCount = process.env.LEADERBOARD_COUNT ? process.env.LEADERBOARD_COUNT : 5;
 
-const { findTopUsersInServer } = require('../helpers/server');
-const { findUser } = require('../helpers/user');
+import { findTopUsersInServer } from '../helpers/server';
+import { findUser } from '../helpers/user';
+import { Command } from '../typedefs';
 
 // KNOWN ISSUES:
 // doesn't account for deleted users
 // looks like shit right now
 
-module.exports = {
+const leaderboardCommand: Command = {
   name: "leaderboard",
   aliases: ["rankings"],
   type: "General",
+  allowDMs: false,
   description: "See who the richest people in your server are.",
   execute: async (message, args) => {
+    if (!message.guild) return;
+
     const serverId = message.guild.id;
 
     // get top users in server
@@ -60,3 +64,5 @@ module.exports = {
     message.channel.send(embed);
   }
 };
+
+export default leaderboardCommand;

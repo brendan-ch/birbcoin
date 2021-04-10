@@ -1,8 +1,8 @@
-const Server = require('../models/server');
-const User = require('../models/user');
+import Server from '../models/server';
+import User from '../models/user';
 const defaultPrefix = process.env.DEFAULT_PREFIX;
 
-const findTopUsersInServer = async (serverId, numUsers = 0) => {
+const findTopUsersInServer = async (serverId: string, numUsers = 0) => {
   const users = await User.find({
     servers: serverId  // find all documents where serverId is in array servers
   }).sort({ 'currency': 'desc' });
@@ -15,7 +15,7 @@ const findTopUsersInServer = async (serverId, numUsers = 0) => {
 };
 
 // find server by server ID (retrieved from message sent by user)
-const findServer = async (serverId) => {
+const findServer = async (serverId: string) => {
   // returns null if no server
   const server = await Server.findOne({
     serverId: serverId
@@ -24,20 +24,20 @@ const findServer = async (serverId) => {
   if (server) {  // a server was found
     // what we'll use to check if server document is updated
     // not all keys from the schema are in here, because we can't set default values for some fields
-    const serverValidator = {
-      "prefix": defaultPrefix,
-      "disabledCommands": [],
-    };
+    // const serverValidator = {
+    //   "prefix": defaultPrefix,
+    //   "disabledCommands": [],
+    // };
 
-    const serverKeys = Object.keys(server.toObject());  // get all keys of server document
-    const serverValidatorKeys = Object.keys(serverValidator);  // get keys of serverValidator (to validate serverKeys)
+    // const serverKeys = Object.keys(server.toObject());  // get all keys of server document
+    // const serverValidatorKeys = Object.keys(serverValidator);  // get keys of serverValidator (to validate serverKeys)
 
-    // loop through validator keys
-    serverValidatorKeys.forEach(value => {
-      if (!serverKeys.includes(value)) {
-        server[value] = serverValidator[value];  // update server document with "default" value
-      }
-    });
+    // // loop through validator keys
+    // serverValidatorKeys.forEach(value => {
+    //   if (!serverKeys.includes(value)) {
+    //     server[value] = serverValidator[value];  // update server document with "default" value
+    //   }
+    // });
 
     await server.save();
     return server;
@@ -56,5 +56,4 @@ const findServer = async (serverId) => {
   };
 };
 
-module.exports.findServer = findServer;
-module.exports.findTopUsersInServer = findTopUsersInServer;
+export { findServer, findTopUsersInServer };

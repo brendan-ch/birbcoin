@@ -1,10 +1,11 @@
-const Discord = require('discord.js');
+import Discord from 'discord.js';
 
-const { findUser } = require('../helpers/user');
+import { findUser } from '../helpers/user';
+import { Command } from '../typedefs';
 const claimCooldown = Number(process.env.CLAIM_COOLDOWN);  // number of milliseconds before user can claim again
 const claimCurrency = Number(process.env.CLAIM_CURRENCY);  // amount of currency for each claim
 
-module.exports = {
+const claimCommand: Command = {
   name: 'claim',
   type: "General",
   allowDMs: true,
@@ -14,17 +15,20 @@ module.exports = {
 
     const userId = message.author.id;
     const username = message.author.tag;
-    const user = await findUser(userId, username, true, serverId, message.client);
+    const user = await findUser(userId, username, true, serverId);
+
+    if (!user) return;
+
     const lastClaimed = user.lastClaimedDaily;
 
     const now = new Date();
     // how long it has been since claim
-    const difference = new Date(now - lastClaimed);
+    const difference = new Date(now.getTime() - lastClaimed.getTime());
 
     // claim cooldown, subtracted by difference
-    const differenceHour = new Date(claimCooldown - difference);
+    const differenceHour = new Date(claimCooldown - difference.getTime());
 
-    if (difference <= claimCooldown) {  // not enough time; user needs to wait
+    if (difference.getTime() <= claimCooldown) {  // not enough time; user needs to wait
       const embed = new Discord.MessageEmbed({
         title: "Please wait before claiming again",
         description: message.author.username + ", you need to wait `" +
@@ -48,4 +52,6 @@ module.exports = {
       message.channel.send(embed);
     }
   }
-}
+};
+
+export default claimCommand;
