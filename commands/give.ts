@@ -11,9 +11,7 @@ const giveCommand: Command = {
   description: "Give someone else some birbcoins.",
   usage: "@<user> <number of birbcoins>",
   execute: async (message, args) => {
-    if (!message.guild) return;
-
-    const serverId = message.guild.id;
+    const serverId = message.guild!.id;
 
     // no user or invalid # birbcoins provided
     if (

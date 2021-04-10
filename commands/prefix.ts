@@ -12,15 +12,13 @@ const prefixCommand: Command = {
   allowDMs: false,
   usage: '<new prefix (optional)>',
   execute: async (message, args) => {
-    if (!message.guild || !message.member) return;
-
-    const serverId = message.guild.id;
+    const serverId = message.guild!.id;
 
     // return current prefix
     if (args.length === 0) {
       const server = await findServer(serverId)
 
-      const hasAdmin = message.member.hasPermission('ADMINISTRATOR');
+      const hasAdmin = message.member!.hasPermission('ADMINISTRATOR');
 
       const embed = new Discord.MessageEmbed({
         title: "Server prefix",
@@ -38,7 +36,7 @@ const prefixCommand: Command = {
     }
 
     // check for sufficient permissions
-    else if (!message.member.hasPermission('ADMINISTRATOR')) {
+    else if (!message.member!.hasPermission('ADMINISTRATOR')) {
       const embed = new Discord.MessageEmbed({
         title: "Insufficient permissions",
         description: 'You must have a role with the "Administrator" permission enabled to change the server prefix.',

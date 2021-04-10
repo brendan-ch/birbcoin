@@ -17,9 +17,7 @@ const claimCommand: Command = {
     const username = message.author.tag;
     const user = await findUser(userId, username, true, serverId);
 
-    if (!user) return;
-
-    const lastClaimed = user.lastClaimedDaily;
+    const lastClaimed = user!.lastClaimedDaily;
 
     const now = new Date();
     // how long it has been since claim
@@ -39,13 +37,13 @@ const claimCommand: Command = {
 
       message.channel.send(embed);
     } else {
-      user.currency += claimCurrency;
-      user.lastClaimedDaily = new Date();
-      user.save();
+      user!.currency += claimCurrency;
+      user!.lastClaimedDaily = new Date();
+      user!.save();
 
       const embed = new Discord.MessageEmbed({
         title: "Birbcoins claimed!",
-        description: message.author.username + " claimed `" + claimCurrency + "` birbcoins! They now have `" + user.currency + "` birbcoins.",
+        description: message.author.username + " claimed `" + claimCurrency + "` birbcoins! They now have `" + user!.currency + "` birbcoins.",
         color: "#17d9ff"
       });
 

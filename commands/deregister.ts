@@ -9,9 +9,7 @@ const deregisterCommand: Command = {
   allowDMs: false,
   description: "Deregister a user from this server's leaderboard.",
   execute: async (message, args) => {
-    if (!message.guild) return;
-
-    const serverId = message.guild.id;
+    const serverId = message.guild!.id;
 
     if (args.length === 0 || !message.mentions.members) {  // no user provided
       const embed = new Discord.MessageEmbed({

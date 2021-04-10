@@ -10,10 +10,8 @@ const disableCommand: Command = {
   allowDMs: false,
   usage: "<command (optional)>",
   execute: async (message, args) => {
-    if (!message.guild) return;
-
     // get server data
-    const serverId = message.guild.id;
+    const serverId = message.guild!.id;
     const server = await findServer(serverId);
     const prefix = server.prefix;
     const disabledCommands = server.disabledCommands;

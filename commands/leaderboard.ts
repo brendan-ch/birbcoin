@@ -16,9 +16,7 @@ const leaderboardCommand: Command = {
   allowDMs: false,
   description: "See who the richest people in your server are.",
   execute: async (message, args) => {
-    if (!message.guild) return;
-
-    const serverId = message.guild.id;
+    const serverId = message.guild!.id;
 
     // get top users in server
     const users = await findTopUsersInServer(serverId);

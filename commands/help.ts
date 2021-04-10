@@ -15,8 +15,7 @@ const helpCommand: Command = {
     
     // get existing commands
     const { commands } = message.client;
-    if (!commands) return;
-    const commandsArray = commands.array();
+    const commandsArray = commands!.array();
 
     // these will be displayed in the embed
     let categories: Array<string> = [];
