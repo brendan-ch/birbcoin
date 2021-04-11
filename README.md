@@ -13,14 +13,14 @@ A Discord currency bot.
 Administrator commands can be viewed using by running `.help` as an admin.
 
 # Running the bot yourself
-You must have Node.js installed on your machine.
+You must have Node.js installed on your machine. Also, you must have TypeScript installed globally using `npm install -g typescript`.
 - Clone this repository (or download the source code from the Releases page)
 - In the project directory, run `npm install`.
 - Follow [these steps](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot) to set up a bot application on Discord. Set `ACCESS_TOKEN` to the bot token when setting up environment variables (see below).
 - Follow [these steps](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#bot-invite-links) to add the bot to your server. Use `3072` for the permissions parameter.
 - Create a MongoDB database by using [Atlas](https://www.mongodb.com/cloud/atlas) or the [Community Server](https://www.mongodb.com/try/download/community). Set `DATABASE_STRING` to the connection string (`mongodb+srv://<username>:<password>@...`) when setting up environment variables.
 - Set the rest of the environment variables to your liking.
-- Run `npm start`.
+- Run `npm start`. This will compile the project into a `dist` folder and run it.
 
 # Environment variables
 All of these are required unless otherwise stated.
