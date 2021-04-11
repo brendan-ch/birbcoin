@@ -2,7 +2,7 @@ import Discord from 'discord.js';
 import { findServer } from '../helpers/server';
 import { findUser } from '../helpers/user';
 
-import { Command, IUser, IServer } from '../typedefs';
+import { Command } from '../typedefs';
 
 const betCommand: Command = {
   name: 'bet',  // used to activate command
