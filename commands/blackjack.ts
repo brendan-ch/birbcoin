@@ -5,16 +5,13 @@ import { findCreateGame, updateHand } from "../helpers/blackjack";
 
 import { Blackjack, Command, IUser } from '../typedefs';
 
-// let messageQueue = {};
-
+/**
+ * Check the value of the player or dealer's deck.
+ * @param deck 
+ * @param dealer Used in calculating the value of aces.
+ * @returns Returns the value of the player or dealer's deck.
+ */
 const checkCurrentNumber = (deck: Blackjack.Deck, dealer = false) => {
-  // const conversionTable = {
-  //   "J": [10],
-  //   "Q": [10],
-  //   "K": [10],
-  //   "A": [0],  // calculate aces afterwards
-  // };
-
   const conversionValues = ["J", "Q", "K"];
 
   let currentValue = 0;
@@ -41,6 +38,11 @@ const checkCurrentNumber = (deck: Blackjack.Deck, dealer = false) => {
   return currentValue;
 };
 
+/**
+ * Determine the winner of the game based on values of decks.
+ * @param game The blackjack game instance.
+ * @returns Returns "tie", "dealer", or "player", indicating who won.
+ */
 const concludeGame = (game: Blackjack.IGame) => {
   let outcome: "tie" | "dealer" | "player";  // "tie", "dealer", "player"
   
@@ -64,6 +66,15 @@ const concludeGame = (game: Blackjack.IGame) => {
   return outcome;
 };
 
+/**
+ * Update the user data after the game is over.
+ * @param message The user's Discord message.
+ * @param user The user instance from the database.
+ * @param bet The amount of the user's bet.
+ * @param outcome "tie", "dealer", or "player". Determines the payout.
+ * @param blackjack Whether the outcome was a blackjack (1.5x payout)
+ * @returns A promise that resolves after user data is updated.
+ */
 const updateUserData = async (
   message: Discord.Message, 
   user: IUser, 
@@ -147,14 +158,14 @@ const updateUserData = async (
 
     await user.save();
     await game.save();
-  }
+  };
+};
 
-  // we want to keep the last message so that we can see what happened
-  // delete messageQueue[message.author.id];
-
-  return;
-}
-
+/**
+ * Continually update the dealer's hand until value is greater than 17.
+ * Call after the user stands or busts.
+ * @param game The game instance from the database.
+ */
 const updateDealerHand = (game: Blackjack.IGame) => {
   // here, we indicate that the dealer's full hand can be shown
   game.showDealerCards = true;
@@ -164,7 +175,13 @@ const updateDealerHand = (game: Blackjack.IGame) => {
   };
 }
 
-// this will be used several times to update user on current game
+/**
+ * Render and send a message of the current game details.
+ * @param message The original Discord message from the user.
+ * @param game The game instance from the database.
+ * @param prefix The server prefix. Defaults to ".".
+ * @returns A promise that resolves after the message is sent.
+ */
 const sendCurrentGame = async (message: Discord.Message, game: Blackjack.IGame, prefix = ".") => {
   const playerValue = checkCurrentNumber(game.playerHand);
   
@@ -211,18 +228,14 @@ const sendCurrentGame = async (message: Discord.Message, game: Blackjack.IGame, 
     + (game.playerHand.length === 2 && game.splitHand.length === 0 ? `, double` : "") 
     + (game.playerHand.length === 2 && game.playerHand[0].value === game.playerHand[1].value && game.splitHand.length === 0 ? ', split' : "")
     + `>\``
-    // The JSON.stringify is temporary and will be removed after I properly format everything
   });
 
-  // delete old message to prevent chaos
   await message.channel.send(embed);
-  // const newMessage = await message.channel.send(embed);
-
-  // const oldMessage = messageQueue[message.author.id];  // message sent in RESPONSE to user, not user's message
-  // if (oldMessage && oldMessage.deletable) oldMessage.delete();
-  // if (newMessage) messageQueue[message.author.id] = newMessage;
 };
 
+/**
+ * The blackjack command object.
+ */
 const blackjackCommand: Command = {
   name: "blackjack",
   aliases: ["21"],

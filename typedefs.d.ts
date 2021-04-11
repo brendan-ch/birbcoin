@@ -32,12 +32,33 @@ namespace Blackjack {
    * Represents a blackjack game instance in the database.
    */
   interface IGame extends mongoose.Document {
+    /**
+     * The user the game is linked to.
+     */
     userId: string,
+    /**
+     * The bet placed by the user.
+     */
     bet: number,
+    /**
+     * The game's deck. Cards are "drawn" from this deck into the player and dealer hands.
+     */
     deck: Deck,
+    /**
+     * The player's deck.
+     */
     playerHand: Deck,
+    /**
+     * The dealer's deck.
+     */
     dealerHand: Deck,
+    /**
+     * Cards here are transferred to the player deck once the first game ends.
+     */
     splitHand: Deck,
+    /**
+     * Whether or not to show the dealer hand.
+     */
     showDealerCards: boolean
   }
 }
